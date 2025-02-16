@@ -4,6 +4,7 @@ import os
 
 
 def main():
+    print(find_dotenv())
     load_dotenv(find_dotenv())
     print(f"smtp_host: {os.environ['SMTP_HOST']}")
     print(f"smtp_port: {os.environ['SMTP_PORT']}")

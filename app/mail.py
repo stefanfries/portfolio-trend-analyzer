@@ -7,7 +7,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class SendMailSettings(BaseSettings):
     smtp_host: str
-    smtp_port: str
+    smtp_port: int
     smtp_username: str
     smtp_password: str
     smtp_email: str # the 'From' email address
@@ -23,10 +23,10 @@ def send_mail(subject: str, message: str, to_email: str):
     settings = SendMailSettings()
 
     print(f"Sending email to {to_email} with subject {subject}")
-    print(settings)
+    print(settings.model_dump())
     
     msg = MIMEMultipart()
-    msg["From"] = settings.SMTP_EMAIL
+    msg["From"] = settings.smtp_email
     msg["To"] = to_email
     msg["Subject"] = subject
 
@@ -37,10 +37,10 @@ def send_mail(subject: str, message: str, to_email: str):
     try:
         with smtplib.SMTP(settings.smtp_host, settings.smtp_port) as server:
             server.starttls()   # secure the connection
-            server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
+            server.login(settings.smtp_username, settings.smtp_password)
             text = msg.as_string()
-            server.sendmail(settings.SMTP_USERNAME, to_email, text)
+            server.sendmail(settings.smtp_username, to_email, text)
     except SMTPException as e:
         print(f"Error: unable to send email. {e}")
-        server.sendmail(settings.SMTP_USERNAME, to_email, text)
+        server.sendmail(settings.smtp_username, to_email, text)
     
