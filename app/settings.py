@@ -1,3 +1,4 @@
+from pydantic import EmailStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -6,7 +7,7 @@ class SendMailSettings(BaseSettings):
     smtp_port: int
     smtp_username: str
     smtp_password: str
-    smtp_email: str  # the 'From' email address
+    smtp_email: EmailStr  # the 'From' email address
 
     model_config = SettingsConfigDict(
         env_prefix="SMTP_",  # Prefix for environment variables
@@ -18,6 +19,7 @@ class SendMailSettings(BaseSettings):
 
 class APISettings(BaseSettings):
     api_url: str
+    api_timeout: float
     api_wakeup_retries: int
     api_wakeup_retries_delay_seconds: int
 
