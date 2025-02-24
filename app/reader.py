@@ -43,6 +43,10 @@ async def wake_up_api() -> bool:
                 if response.status_code == 200:
                     print("✅ API is awake!")
                     return True
+                else:
+                    print(
+                        f"❌ API is down! Retrying in {api_settings.api_timeout} seconds..."
+                    )
             except httpx.RequestError:
                 pass
             await asyncio.sleep(api_settings.api_wakeup_retries_delay_seconds)
@@ -65,7 +69,7 @@ async def datareader(
 
     # Adjust start date to 14 days before end date if not provided or in the future
     if start is None or start > end or is_intraday(interval):
-        start = end - timedelta(days=14)
+        start = end - timedelta(days=28)
     start = start.replace(hour=0, minute=0, second=0, microsecond=0)
 
     # Normalize id_notation values
@@ -77,10 +81,10 @@ async def datareader(
 
     # API query parameters
     params = {
-        "START": start.strftime("%d.%m.%Y"),
-        "END": end.strftime("%d.%m.%Y"),
-        "ID_NOTATION": id_notation,
-        "INTERVALL": interval,
+        "start": start.strftime("%Y-%m-%d"),
+        "end": end.strftime("%Y-%m-%d"),
+        "id_notation": id_notation,
+        "interval": interval,
     }
 
     # Ensure API is up and running
@@ -106,9 +110,9 @@ async def datareader(
             return df
 
         except httpx.HTTPStatusError as e:
-            print(f"Error: {e}")
+            print(f"❌ Error: {e}")
             return None
 
         except httpx.RequestError as e:
-            print(f"Error: {e}")
+            print(f"❌ Error: {e}")
             return None
