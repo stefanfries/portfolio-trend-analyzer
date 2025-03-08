@@ -7,6 +7,17 @@ from app.settings import SendMailSettings
 
 
 def send_mail(subject: str, message: str, to_email: str) -> None:
+    """
+    Sends an email with the specified subject and message to the given email address.
+    Args:
+        subject (str): The subject of the email.
+        message (str): The HTML content of the email.
+        to_email (str): The recipient's email address.
+    Returns:
+        None
+    Raises:
+        SMTPException: If there is an error sending the email.
+    """
 
     send_mail_settings = SendMailSettings()
 

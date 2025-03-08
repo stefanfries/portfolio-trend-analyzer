@@ -5,7 +5,7 @@ from typing import Dict, Optional, Tuple
 import httpx
 import pandas as pd
 
-from app.models import HistoryData, Interval
+from app.models import Interval
 from app.settings import APISettings
 
 
