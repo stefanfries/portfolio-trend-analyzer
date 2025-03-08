@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List, Literal
 
+import pandas as pd
 from pydantic import BaseModel
 
 type Interval = Literal["5min", "15min", "30min", "hour", "day", "week", "month"]

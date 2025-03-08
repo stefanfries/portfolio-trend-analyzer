@@ -19,6 +19,7 @@ class SendMailSettings(BaseSettings):
 
 class APISettings(BaseSettings):
     api_url: str
+    api_history_path: str
     api_timeout: float
     api_wakeup_retries: int
     api_wakeup_retries_delay_seconds: int

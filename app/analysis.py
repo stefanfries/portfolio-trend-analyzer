@@ -9,9 +9,8 @@ def fit_parabola(df: pd.DataFrame, no_of_values: int = 20) -> dict:
     # Use the last 'no_of_values' closing prices for the analysis
     # recent_data = df.tail(no_of_values)
 
-    df["mdates"] = df["datetime"].apply(
-        mdates.date2num
-    )  # More precise numeric format for polyfit
+    df["mdates"] = df["datetime"].apply(mdates.date2num)
+    # More precise numeric format for polyfit
 
     # Now you can use the 'mdates' column for polyfit
     x = df["mdates"].values  # Numeric values for polyfit (mdates)
@@ -45,12 +44,12 @@ def generate_recommendation(parabola_parms: dict) -> str:
     trend_increasing = 2 * a * mdate_current_x + b > 0
 
     if vertex_x < mdate_current_x and trend_increasing:
-        return f"BUY ASAP! The trend is increasing and vertex ({vertex_x:.2f}) is in the past."
+        return f"BUY ASAP! Trend is increasing, minimum at {vertex_y:.2f} € was in the past ({mdates.num2date(vertex_x).strftime('%d.%m.%Y')})."
     elif vertex_x > mdate_current_x and not trend_increasing:
-        return f"Set LIMIT BUY at {vertex_y:.2f}. Trend is decreasing, vertex ({vertex_x:.2f}) is in the future."
+        return f"Place LIMITED BUY order at {vertex_y:.2f} €. Trend is decreasing, minimum expected in near future ({mdates.num2date(vertex_x).strftime('%d.%m.%Y')})."
     elif vertex_x < mdate_current_x and not trend_increasing:
-        return f"SELL ASAP! The trend is decreasing and vertex ({vertex_x:.2f}) is in the past."
+        return f"SELL ASAP! Trend is decreasing, maximum at {vertex_y:.2f} € was in the past ({mdates.num2date(vertex_x).strftime('%d.%m.%Y')})."
     elif vertex_x > mdate_current_x and trend_increasing:
-        return f"Set LIMIT SELL at {vertex_y:.2f}. Trend is increasing, vertex ({vertex_x:.2f}) is in the future."
+        return f"Place LIMITED SELL order at {vertex_y:.2f} €. Trend is increasing, maximum expected in the future ({mdates.num2date(vertex_x).strftime('%d.%m.%Y')})."
 
     return "No clear recommendation."
