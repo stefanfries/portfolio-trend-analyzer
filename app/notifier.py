@@ -19,7 +19,7 @@ def send_mail(subject: str, message: str, to_email: str) -> None:
         SMTPException: If there is an error sending the email.
     """
 
-    send_mail_settings = SendMailSettings()
+    send_mail_settings = SendMailSettings()  # type: ignore
 
     msg = MIMEMultipart("alternative")
     msg["From"] = send_mail_settings.smtp_email

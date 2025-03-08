@@ -1,4 +1,5 @@
 import asyncio
+import tkinter
 from datetime import datetime, timedelta
 
 import pandas as pd
@@ -17,6 +18,8 @@ from app.notifier import send_mail
 from app.reader import datareader
 from app.visualizer import plot_candlestick
 
+print(tkinter.TkVersion)  # Should print a version number
+
 
 async def main():
     # depot = test_depot
@@ -25,24 +28,27 @@ async def main():
     depot = my_mega_trend_folger
     # depot = depot_900_prozent
     # depot = etf_depot
+
     history_days = 14
+
     for wkn in depot:
-        df = pd.DataFrame()
         metadata, df = await datareader(
             wkn,
             start=datetime.now() - timedelta(days=history_days),
             id_notation="preferred_id_notation_life_trading",
-            interval="day",
+            interval="hour",
         )  # type: ignore
 
         if df is None:
             print(f"Could not retrieve data for {wkn}")
             continue
-        # plot_candlestick(df, title=wkn)
         parabola_parms = fit_parabola(df)
-        print(f"Analysing history of {wkn}, last {history_days} days")
+        print(
+            f"Analysing history of {metadata.get("wkn")}, last {history_days} days, interval: {metadata.get("interval")}"
+        )
         recommendation = generate_recommendation(parabola_parms)
         print(f"Recommendation: {recommendation}")
+        plot_candlestick(df, title=metadata.get("name", wkn))
         print()
 
     to_email = "stefan.fries.burgdorf@gmx.de"

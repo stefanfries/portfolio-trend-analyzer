@@ -3,6 +3,9 @@ import mplfinance as mpf
 import pandas as pd
 
 matplotlib.use("Agg")  # Use non-interactive backend (Agg)
+matplotlib.use("TkAgg")  # Use simple interactive backend (TkAgg)
+
+print(matplotlib.get_backend())
 
 
 def plot_candlestick(df: pd.DataFrame, title: str = "Candlestick Chart") -> None:
@@ -22,6 +25,6 @@ def plot_candlestick(df: pd.DataFrame, title: str = "Candlestick Chart") -> None
         # volume=True,
         style="charles",
         title=title,
-        savefig="candlestick.png",
+        # savefig="candlestick.png",
     )
     print("📊 Chart saved as candlestick.png. Open it manually to view.")

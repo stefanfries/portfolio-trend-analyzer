@@ -105,9 +105,9 @@ async def datareader(
         "interval": interval,
     }
     if start:
-        params["start"] = start.strftime("%Y-%m-%d")
+        params["start"] = start.strftime("%Y-%m-%dT%H:%M:%S")
     if end:
-        params["end"] = end.strftime("%Y-%m-%d")
+        params["end"] = end.strftime("%Y-%m-%dT%H:%M:%S")
 
     # Ensure API is up and running
     if not await is_api_up():
