@@ -8,7 +8,7 @@ matplotlib.use("TkAgg")  # Use simple interactive backend (TkAgg)
 print(matplotlib.get_backend())
 
 
-def plot_candlestick(df: pd.DataFrame, title: str = "Candlestick Chart") -> None:
+def plot_candlestick(df: pd.DataFrame, wkn: str, name: str) -> None:
     """Plot a candlestick chart for the given security data."""
 
     df = df.set_index("datetime")  # Make the datetime column an index
@@ -24,7 +24,7 @@ def plot_candlestick(df: pd.DataFrame, title: str = "Candlestick Chart") -> None
         # show_nontrading=True,
         # volume=True,
         style="charles",
-        title=title,
-        # savefig="candlestick.png",
+        title=f"Candlestick Chart: {name}",
+        savefig=f"candlestick_{wkn}.png",
     )
     print("📊 Chart saved as candlestick.png. Open it manually to view.")

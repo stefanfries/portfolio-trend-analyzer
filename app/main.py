@@ -39,16 +39,19 @@ async def main():
             interval="hour",
         )  # type: ignore
 
-        if df is None:
+        if metadata is None or df is None:
             print(f"Could not retrieve data for {wkn}")
             continue
-        parabola_parms = fit_parabola(df)
+        wkn = metadata.get("wkn")
+        name = metadata.get("name")
+        interval = metadata.get("interval")
         print(
-            f"Analysing history of {metadata.get("wkn")}, last {history_days} days, interval: {metadata.get("interval")}"
+            f"Analysing history of {wkn} ({name}), last {history_days} days, interval: {interval}"
         )
+        parabola_parms = fit_parabola(df)
         recommendation = generate_recommendation(parabola_parms)
         print(f"Recommendation: {recommendation}")
-        plot_candlestick(df, title=metadata.get("name", wkn))
+        plot_candlestick(df, wkn, name)  # type: ignore
         print()
 
     to_email = "stefan.fries.burgdorf@gmx.de"
