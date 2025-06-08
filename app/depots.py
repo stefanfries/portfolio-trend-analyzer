@@ -1,5 +1,5 @@
 test_depot = [
-    "JV8872",  # Apple Inc.
+    "865985",  # Apple Inc.
 ]
 
 mega_trend_folger = [
@@ -13,6 +13,7 @@ mega_trend_folger = [
     "HS75W5",  # Linde
     "HT2081",  # Fiserv
     "HS2RHM",  # Procter & Gamble
+    "MJ85T6",  # Netflix Inc.
 ]
 
 my_mega_trend_folger = [
@@ -26,6 +27,7 @@ my_mega_trend_folger = [
     "HS75W5",  # Linde
     "SY7WUY",  # Fiserv
     "SY0XEM",  # Procter & Gamble
+    "MJ85T6",  # Netflix Inc.
 ]
 
 depot_900_prozent = [
@@ -39,6 +41,8 @@ depot_900_prozent = [
     "UJ1ESN",  # Quanta Services Inc.
     "GV0TCA",  # Eli Lilly and Company
     "DJ992K",  # Icici Bank
+    "GG79WS",  # Regeneron Pharmaceuticals Inc.
+    "UJ2B72",  # Lockheed Martin Corporation
     "SU6NLF",  # DAX Put
 ]
 
@@ -63,4 +67,17 @@ tsi_6i_faktor2 = [
 etf_depot = [
     "A0YEDL",  # iShares NASDAQ 100 UCITS ETF - USD ACC
     "A2N6LC",  # Xtrackers Artificial Intelligence & Big Data UCITS ETF - 1C USD ACC
+]
+
+os_projekt_2025 = [
+    "HT2CE1",  # Vertiv Holdings Co
+    "HT2CD9",  # Vistra Corp
+    "JV0L91",  # TJX Companies Inc
+    "JF1V8T",  # Adobe Inc
+    "MG29S9",  # Mondelez International Inc
+    "MG87AD",  # Charter Communications Inc
+    "MJ5472",  # Lam Research Corp
+    "MG4JM0",  # JD.com Inc
+    "JT998X",  # Progressive Corp
+    "MG0XRB",  # Booking Holdings Inc
 ]

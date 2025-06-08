@@ -26,7 +26,6 @@ def fit_parabola(df: pd.DataFrame, no_of_values: int = 20) -> dict:
 
     # Convert vertex_x (the mdates value) back to datetime format
     # vertex_date = mdates.num2date(vertex_x)  # Convert mdates back to datetime
-    # return {"a": a, "b": b, "c": c, "vertex_date": vertex_date, "vertex_y": vertex_y}
 
     return {"a": a, "b": b, "c": c, "vertex_x": vertex_x, "vertex_y": vertex_y}
 

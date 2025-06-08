@@ -10,6 +10,7 @@ from app.depots import (
     etf_depot,
     mega_trend_folger,
     my_mega_trend_folger,
+    os_projekt_2025,
     test_depot,
     tsi_6i_aktien,
     tsi_6i_faktor2,
@@ -28,6 +29,8 @@ async def main():
     depot = my_mega_trend_folger
     # depot = depot_900_prozent
     # depot = etf_depot
+    # depot = test_depot
+    # depot = os_projekt_2025
 
     history_days = 14
 
