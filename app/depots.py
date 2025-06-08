@@ -3,31 +3,31 @@ test_depot = [
 ]
 
 mega_trend_folger = [
-    "MB76DR",  # Alphabet Inc.
-    "JK3KVQ",  # Nvidia Corporation
-    "ME2CU8",  # Palo Alto Networks Inc.
-    "MJ1278",  # Cintas Corporation
-    "JK6CRM",  # Meta Platforms Inc.
-    "JV8872",  # Apple Inc.
-    "MG80MS",  # Mastercard Inc.
-    "HS75W5",  # Linde
-    "HT2081",  # Fiserv
-    "HS2RHM",  # Procter & Gamble
     "MJ85T6",  # Netflix Inc.
+    "MG7C9A",  # Broadcom Inc.
+    "JK3KVQ",  # Nvidia Corporation
+    "MK210Y",  # Salesforce.com Inc.
+    "MJ1278",  # Cintas Corporation
+    "MK2EWJ",  # Munich Re AG
+    "MG7BYX",  # Costco Wholesale Corporation
+    "MG80MS",  # Mastercard Inc.
+    "JF4R3F",  # Alphabet Inc.
+    "HT2081",  # Fiserv
+    "HS2RHM",  # Procter&Gamble
 ]
 
 my_mega_trend_folger = [
-    "MB76DR",  # Alphabet Inc.
-    "MG3TC1",  # Nvidia Corporation
-    "ME2CU8",  # Palo Alto Networks Inc.
-    "MJ1278",  # Cintas Corporation
-    "MG007C",  # Meta Platforms Inc.
-    "JV8872",  # Apple Inc.
-    "MG80MS",  # Mastercard Inc.
-    "HS75W5",  # Linde
-    "SY7WUY",  # Fiserv
-    "SY0XEM",  # Procter & Gamble
     "MJ85T6",  # Netflix Inc.
+    "MG7C9A",  # Broadcom Inc.
+    "JK3KVQ",  # Nvidia Corporation
+    "MK210Y",  # Salesforce.com Inc.
+    "MJ1278",  # Cintas Corporation
+    "MK2EWJ",  # Munich Re AG
+    "MG7BYX",  # Costco Wholesale Corporation
+    "MG80MS",  # Mastercard Inc.
+    "JF4R3F",  # Alphabet Inc.
+    "HT2081",  # Fiserv
+    "HS2RHM",  # Procter&Gamble
 ]
 
 depot_900_prozent = [
