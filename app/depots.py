@@ -17,7 +17,7 @@ mega_trend_folger = [
 ]
 
 my_mega_trend_folger = [
-    "MJ85T6",  # Netflix Inc.
+    # "MJ85T6",  # Netflix Inc.
     "MG7C9A",  # Broadcom Inc.
     "JK3KVQ",  # Nvidia Corporation
     "MK210Y",  # Salesforce.com Inc.

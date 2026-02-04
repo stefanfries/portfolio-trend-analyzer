@@ -23,28 +23,30 @@ print(tkinter.TkVersion)  # Should print a version number
 
 
 async def main():
-    # depot = test_depot
+    depot = test_depot
     # depot = tsi_6i_aktien
     # depot = tsi_6i_faktor2
-    depot = my_mega_trend_folger
+    # depot = my_mega_trend_folger
     # depot = depot_900_prozent
     # depot = etf_depot
-    # depot = test_depot
     # depot = os_projekt_2025
 
     history_days = 14
+    df = None  # Initialize to track if any data was successfully retrieved
 
     for wkn in depot:
-        metadata, df = await datareader(
+        result = await datareader(
             wkn,
             start=datetime.now() - timedelta(days=history_days),
             id_notation="preferred_id_notation_life_trading",
-            interval="hour",
+            interval="day",
         )  # type: ignore
 
-        if metadata is None or df is None:
-            print(f"Could not retrieve data for {wkn}")
+        if result is None:
+            print(f"❌ Could not retrieve data for {wkn}")
             continue
+        
+        metadata, df = result
         wkn = metadata.get("wkn")
         name = metadata.get("name")
         interval = metadata.get("interval")
