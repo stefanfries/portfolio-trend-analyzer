@@ -3,17 +3,23 @@ test_depot = [
 ]
 
 mega_trend_folger = [
-    "MJ85T6",  # Netflix Inc.
-    "MG7C9A",  # Broadcom Inc.
-    "JK3KVQ",  # Nvidia Corporation
-    "MK210Y",  # Salesforce.com Inc.
-    "MJ1278",  # Cintas Corporation
-    "MK2EWJ",  # Munich Re AG
-    "MG7BYX",  # Costco Wholesale Corporation
-    "MG80MS",  # Mastercard Inc.
-    "JF4R3F",  # Alphabet Inc.
-    "HT2081",  # Fiserv
-    "HS2RHM",  # Procter&Gamble
+    "HT8UZB",  # Alphabet Inc.
+    "JU5YHH",  # Qualcomm Inc.
+    "HS4P7G",  # Amazon.com Inc.
+    "JT2GHE",  # Meta Platforms Inc.
+    "JH4WD6",  # Apple Inc.
+    "HS765P",  # Starbucks Corporation
+    "MK74CT",  # GE Aerospace & Defense
+    "JU3YAP",  # Nasdaq Inc.
+    "HT5D3H",  # Walmart Inc.
+    "MM2DRR",  # EssilorLuxottica S.A.
+    "JK9Z20",  # Microsoft Corporation
+    "MG9VYR",  # Cisco Systems Inc.
+    "JK9V0Y",  # Nvidia Corporation
+    "MM5J03",  # Newmont Corporation
+    "JH5VLN",  # Blackrock Inc.
+    "HT93ZB",  # Allianz SE
+    "MM0CVV",  # Applied Materials Inc.
 ]
 
 my_mega_trend_folger = [

@@ -1,12 +1,12 @@
-from pydantic import EmailStr
+from pydantic import EmailStr, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class SendMailSettings(BaseSettings):
     smtp_host: str
     smtp_port: int
-    smtp_username: str
-    smtp_password: str
+    smtp_username: SecretStr
+    smtp_password: SecretStr
     smtp_email: EmailStr  # the 'From' email address
 
     model_config = SettingsConfigDict(

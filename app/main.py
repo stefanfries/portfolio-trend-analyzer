@@ -23,23 +23,24 @@ print(tkinter.TkVersion)  # Should print a version number
 
 
 async def main():
-    depot = test_depot
+    # depot = test_depot
     # depot = tsi_6i_aktien
     # depot = tsi_6i_faktor2
+    depot = mega_trend_folger
     # depot = my_mega_trend_folger
     # depot = depot_900_prozent
     # depot = etf_depot
     # depot = os_projekt_2025
 
-    history_days = 14
-    df = None  # Initialize to track if any data was successfully retrieved
+    history_days = 7
+    results = []  # Collect all analysis results
 
     for wkn in depot:
         result = await datareader(
             wkn,
             start=datetime.now() - timedelta(days=history_days),
             id_notation="preferred_id_notation_life_trading",
-            interval="day",
+            interval="hour",
         )  # type: ignore
 
         if result is None:
@@ -50,13 +51,24 @@ async def main():
         wkn = metadata.get("wkn")
         name = metadata.get("name")
         interval = metadata.get("interval")
+        api_start = metadata.get("start")
+        api_end = metadata.get("end")
         print(
             f"Analysing history of {wkn} ({name}), last {history_days} days, interval: {interval}"
         )
+        print(f"API returned data from {api_start} to {api_end} ({len(df)} data points)")
         parabola_parms = fit_parabola(df)
         recommendation = generate_recommendation(parabola_parms)
         print(f"Recommendation: {recommendation}")
         plot_candlestick(df, wkn, name)  # type: ignore
+        
+        # Collect results for email report
+        results.append({
+            "WKN": wkn,
+            "Name": name,
+            "Recommendation": recommendation,
+            "Current Price": f"{df['close'].iloc[-1]:.2f} €"
+        })
         print()
 
     to_email = "stefan.fries.burgdorf@gmx.de"
@@ -72,18 +84,21 @@ async def main():
     </head>
     <body>
         <p>Hello Stefan,</p>
-        <p>here is the securities history you requested:</p>
+        <p>here is the securities analysis and recommendations you requested:</p>
         {table}
         <p>Best regards,<br>Your Securities Bot</p>
     </body>
     </html>
     """
 
-    if df is not None:
-        table_html = df.to_html(index=False, border=1)
+    if results:
+        summary_df = pd.DataFrame(results)
+        table_html = summary_df.to_html(index=False, border=1)
         message = message.format(table=table_html)
-
-    # send_mail(subject, message, to_email)
+        # Uncomment to send email:
+        # send_mail(subject, message, to_email)
+    else:
+        print("⚠️ No data was successfully retrieved for any security.")
 
 
 if __name__ == "__main__":
