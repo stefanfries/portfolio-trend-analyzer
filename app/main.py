@@ -1,9 +1,15 @@
 import asyncio
+import sys
 from datetime import datetime, timedelta
 
 import pandas as pd
 
-from app.analysis import fit_parabola, generate_recommendation
+from app.analysis import detect_trend_break, fit_parabola, generate_recommendation
+
+# Fix Windows console encoding for emoji support
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding="utf-8")
+
 from app.depots import (
     depot_900_prozent,  # noqa: F401
     etf_depot,  # noqa: F401
@@ -64,6 +70,22 @@ async def main():
         parabola_parms = fit_parabola(df)
         recommendation = generate_recommendation(parabola_parms)
         print(f"Recommendation: {recommendation}")
+
+        # Detect trend breaks using multi-indicator analysis
+        trend_signal = detect_trend_break(df, timeframe="hourly")
+
+        # Debug: Show data range for verification
+        data_high = df["high"].max()
+        data_low = df["low"].min()
+        recent_high = trend_signal["metrics"]["recent_high"]
+        current = trend_signal["metrics"]["current_price"]
+
+        print(f"📍 Data: High={data_high:.2f}€, Low={data_low:.2f}€, Current={current:.2f}€")
+        print(f"🎯 Used High={recent_high:.2f}€ for drawdown calculation")
+        print(
+            f"Trend Signal: {trend_signal['action']} (Drawdown: {trend_signal['metrics']['drawdown_pct']:.2f}%, ADX: {trend_signal['metrics']['adx']:.1f})"
+        )
+
         plot_candlestick(df, wkn, name)  # type: ignore
 
         # Collect results for email report
@@ -72,6 +94,9 @@ async def main():
                 "WKN": wkn,
                 "Name": name,
                 "Recommendation": recommendation,
+                "Trend Signal": trend_signal["action"],
+                "Drawdown %": f"{trend_signal['metrics']['drawdown_pct']:.2f}",
+                "ADX": f"{trend_signal['metrics']['adx']:.1f}",
                 "Current Price": f"{df['close'].iloc[-1]:.2f} €",
             }
         )

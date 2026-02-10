@@ -1,6 +1,5 @@
 import asyncio
 from datetime import datetime
-from typing import Dict, Optional, Tuple
 
 import httpx
 import pandas as pd
@@ -35,9 +34,7 @@ async def is_api_up() -> bool:
     async with httpx.AsyncClient() as client:
         try:
             print("🔄 Checking whether API is up...")
-            response = await client.get(
-                api_settings.api_url, timeout=api_settings.api_timeout
-            )
+            response = await client.get(api_settings.api_url, timeout=api_settings.api_timeout)
             if response.status_code == 200:
                 return True
         except httpx.RequestError:
@@ -60,16 +57,12 @@ async def wake_up_api() -> bool:
         for _ in range(api_settings.api_wakeup_retries):
             try:
                 print("🔄 Pinging API to wake it up...")
-                response = await client.get(
-                    api_settings.api_url, timeout=api_settings.api_timeout
-                )
+                response = await client.get(api_settings.api_url, timeout=api_settings.api_timeout)
                 if response.status_code == 200:
                     print("✅ API is awake!")
                     return True
                 else:
-                    print(
-                        f"❌ API is down! Retrying in {api_settings.api_timeout} seconds..."
-                    )
+                    print(f"❌ API is down! Retrying in {api_settings.api_timeout} seconds...")
             except httpx.RequestError:
                 pass
             await asyncio.sleep(api_settings.api_wakeup_retries_delay_seconds)
@@ -78,11 +71,11 @@ async def wake_up_api() -> bool:
 
 async def datareader(
     instrument_id: str,
-    start: Optional[datetime] = None,
-    end: Optional[datetime] = None,
+    start: datetime | None = None,
+    end: datetime | None = None,
     interval: Interval = "day",
     id_notation: str = "default_id_notation",
-) -> Optional[Tuple[Dict[str, str], pd.DataFrame]]:
+) -> tuple[dict[str, str], pd.DataFrame] | None:
     """
     Fetch historical data for a given financial instrument from the API.
     Args:
@@ -141,7 +134,8 @@ async def datareader(
 
             df = pd.DataFrame(history_data)
             df["datetime"] = pd.to_datetime(df["datetime"])
-            print(f"📈 Data for {metadata.get("name")} retrieved successfully!")
+            df = df.sort_values("datetime", ascending=True).reset_index(drop=True)
+            print(f"📈 Data for {metadata.get('name')} retrieved successfully!")
             return metadata, df
 
         except httpx.HTTPStatusError as e:
