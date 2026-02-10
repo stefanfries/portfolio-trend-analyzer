@@ -6,16 +6,16 @@ import pandas as pd
 
 from app.analysis import fit_parabola, generate_recommendation
 from app.depots import (
-    depot_900_prozent,
-    etf_depot,
-    mega_trend_folger,
-    my_mega_trend_folger,
-    os_projekt_2025,
-    test_depot,
-    tsi_6i_aktien,
-    tsi_6i_faktor2,
+    depot_900_prozent,  # noqa: F401
+    etf_depot,  # noqa: F401
+    mega_trend_folger,  # noqa: F401
+    my_mega_trend_folger,  # noqa: F401
+    os_projekt_2025,  # noqa: F401
+    test_depot,  # noqa: F401
+    tsi_6i_aktien,  # noqa: F401
+    tsi_6i_faktor2,  # noqa: F401
 )
-from app.notifier import send_mail
+from app.notifier import send_mail  # noqa: F401
 from app.reader import datareader
 from app.visualizer import plot_candlestick
 
@@ -32,7 +32,7 @@ async def main():
     # depot = etf_depot
     # depot = os_projekt_2025
 
-    history_days = 7
+    history_days = 14
     results = []  # Collect all analysis results
 
     for wkn in depot:
@@ -46,7 +46,7 @@ async def main():
         if result is None:
             print(f"❌ Could not retrieve data for {wkn}")
             continue
-        
+
         metadata, df = result
         wkn = metadata.get("wkn")
         name = metadata.get("name")
@@ -61,18 +61,20 @@ async def main():
         recommendation = generate_recommendation(parabola_parms)
         print(f"Recommendation: {recommendation}")
         plot_candlestick(df, wkn, name)  # type: ignore
-        
+
         # Collect results for email report
-        results.append({
-            "WKN": wkn,
-            "Name": name,
-            "Recommendation": recommendation,
-            "Current Price": f"{df['close'].iloc[-1]:.2f} €"
-        })
+        results.append(
+            {
+                "WKN": wkn,
+                "Name": name,
+                "Recommendation": recommendation,
+                "Current Price": f"{df['close'].iloc[-1]:.2f} €",
+            }
+        )
         print()
 
-    to_email = "stefan.fries.burgdorf@gmx.de"
-    subject = "Securities Analysis and Recommendations"
+    to_email = "stefan.fries.burgdorf@gmx.de"  # noqa: F841
+    subject = "Securities Analysis and Recommendations"  # noqa: F841
     message = """
     <html>
     <head>
