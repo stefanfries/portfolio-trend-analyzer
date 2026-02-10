@@ -1,5 +1,4 @@
 import asyncio
-import tkinter
 from datetime import datetime, timedelta
 
 import pandas as pd
@@ -19,8 +18,6 @@ from app.notifier import send_mail  # noqa: F401
 from app.reader import datareader
 from app.visualizer import plot_candlestick
 
-print(tkinter.TkVersion)  # Should print a version number
-
 
 async def main():
     # depot = test_depot
@@ -35,7 +32,13 @@ async def main():
     history_days = 14
     results = []  # Collect all analysis results
 
-    for wkn in depot:
+    total_securities = len(depot)
+    print(f"\n{'=' * 80}")
+    print(f"🚀 Starting analysis of {total_securities} securities from depot")
+    print(f"{'=' * 80}\n")
+
+    for index, wkn in enumerate(depot, start=1):
+        print(f"📊 [{index}/{total_securities}] Processing {wkn}...")
         result = await datareader(
             wkn,
             start=datetime.now() - timedelta(days=history_days),
@@ -45,6 +48,7 @@ async def main():
 
         if result is None:
             print(f"❌ Could not retrieve data for {wkn}")
+            print(f"{'-' * 80}\n")
             continue
 
         metadata, df = result
@@ -71,7 +75,13 @@ async def main():
                 "Current Price": f"{df['close'].iloc[-1]:.2f} €",
             }
         )
-        print()
+        print(f"{'-' * 80}\n")
+
+    print(f"{'=' * 80}")
+    print(
+        f"✅ Analysis complete! Processed {len(results)} out of {total_securities} securities successfully."
+    )
+    print(f"{'=' * 80}\n")
 
     to_email = "stefan.fries.burgdorf@gmx.de"  # noqa: F841
     subject = "Securities Analysis and Recommendations"  # noqa: F841

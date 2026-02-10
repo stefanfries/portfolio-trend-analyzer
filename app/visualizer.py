@@ -15,10 +15,7 @@ from app.indicators import supertrend
 
 # from app.indicators import pandas_supertrend
 
-matplotlib.use("Agg")  # Use non-interactive backend (Agg)
-matplotlib.use("TkAgg")  # Use simple interactive backend (TkAgg)
-
-print(matplotlib.get_backend())
+matplotlib.use("Agg")  # Use non-interactive backend - saves files without showing GUI
 
 
 def plot_candlestick(df: pd.DataFrame, wkn: str, name: str) -> None:
