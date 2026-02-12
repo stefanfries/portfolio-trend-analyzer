@@ -1,17 +1,12 @@
 from datetime import date
+from pathlib import Path
 
 import matplotlib
-import matplotlib.dates as mdates
 import mplfinance as mpf
 import numpy as np
 import pandas as pd
-import pandas_ta as ta
 
 # import pandas_ta as ta
-import talib
-from scipy.stats import linregress
-
-from app.indicators import supertrend
 
 # from app.indicators import pandas_supertrend
 
@@ -20,6 +15,10 @@ matplotlib.use("Agg")  # Use non-interactive backend - saves files without showi
 
 def plot_candlestick(df: pd.DataFrame, wkn: str, name: str) -> None:
     """Plot a candlestick chart for the given security data."""
+
+    # Ensure charts directory exists
+    charts_dir = Path("charts")
+    charts_dir.mkdir(exist_ok=True)
 
     df = df.set_index("datetime")  # Make the datetime column an index
     if "volume" in df.columns and df["volume"].nunique() == 1:
@@ -131,6 +130,9 @@ def plot_candlestick(df: pd.DataFrame, wkn: str, name: str) -> None:
     apds = [ap for ap in apds if ap is not None]  # Remove None values
 
     # Define figure with two panels (candlestick + RSI)
+    chart_filename = f"candlestick_{wkn}_{date.today():%Y-%m-%d}.png"
+    chart_path = charts_dir / chart_filename
+
     mpf.plot(
         data=df,
         # mav=(5, 10),
@@ -139,7 +141,7 @@ def plot_candlestick(df: pd.DataFrame, wkn: str, name: str) -> None:
         # volume=True,
         style="charles",
         title=f"Analysis for {name}",
-        savefig=f"candlestick_{wkn}_{date.today():%Y-%m-%d}.png",
+        savefig=str(chart_path),
         returnfig=True,  # Get the fiure and axis to modify and save it later
         # addplot=rsi_plot,
         # panel_ratios=(3, 1),  # Larger main panel, smaller RSI panel
@@ -148,6 +150,4 @@ def plot_candlestick(df: pd.DataFrame, wkn: str, name: str) -> None:
         # ylabel_lower="RSI",
     )
 
-    print(
-        f"📊 Chart saved as candlestick_{wkn}_{date.today():%Y-%m-%d}.png. Open it manually to view."
-    )
+    print(f"📊 Chart saved as {chart_path}. Open it manually to view.")
