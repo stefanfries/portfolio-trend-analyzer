@@ -4,22 +4,37 @@ test_depot = [
 
 mega_trend_folger = [
     "HT8UZB",  # Alphabet Inc.
-    "JU5YHH",  # Qualcomm Inc.
     "HS4P7G",  # Amazon.com Inc.
     "JT2GHE",  # Meta Platforms Inc.
     "JH4WD6",  # Apple Inc.
     "HS765P",  # Starbucks Corporation
     "MK74CT",  # GE Aerospace & Defense
-    "JU3YAP",  # Nasdaq Inc.
-    "HT5D3H",  # Walmart Inc.
     "MM2DRR",  # EssilorLuxottica S.A.
-    "JK9Z20",  # Microsoft Corporation
     "MG9VYR",  # Cisco Systems Inc.
     "JK9V0Y",  # Nvidia Corporation
     "MM5J03",  # Newmont Corporation
     "JH5VLN",  # Blackrock Inc.
     "HT93ZB",  # Allianz SE
     "MM0CVV",  # Applied Materials Inc.
+    "MJ5417",  # Regeneron Pharmaceuticals Inc.
+    "MM5HUZ",  # KLA Corp.
+]
+
+mtf_underlyings = [
+    "US02079K1079",  # Alphabet Inc.
+    "US0231351067",  # Amazon.com Inc.
+    "US30303M1027",  # Meta Platforms Inc.
+    "US0378331005",  # Apple Inc.
+    "US8552441094",  # Starbucks Corporation
+    "US3696043013",  # GE Aerospace & Defense
+    "FR0000121667",  # EssilorLuxottica S.A.
+    "US17275R1023",  # Cisco Systems Inc.
+    "US67066G1040",  # Nvidia Corporation
+    "US6516391066",  # Newmont Corporation
+    "US09290D1019",  # Blackrock Inc.
+    "DE0008404005",  # Allianz SE
+    "US0382221051",  # Applied Materials Inc.
+    "US4824801009",  # KLA Corp.
 ]
 
 my_mega_trend_folger = [

@@ -14,6 +14,7 @@ from app.depots import (
     depot_900_prozent,  # noqa: F401
     etf_depot,  # noqa: F401
     mega_trend_folger,  # noqa: F401
+    mtf_underlyings,  # noqa: F401
     my_mega_trend_folger,  # noqa: F401
     os_projekt_2025,  # noqa: F401
     test_depot,  # noqa: F401
@@ -22,6 +23,7 @@ from app.depots import (
 )
 from app.notifier import send_mail  # noqa: F401
 from app.reader import datareader
+from app.results_saver import save_results_to_xlsx
 from app.visualizer import plot_candlestick
 
 
@@ -30,6 +32,9 @@ async def main():
     # depot = tsi_6i_aktien
     # depot = tsi_6i_faktor2
     depot = mega_trend_folger
+    depot_name = "mega_trend_folger"
+    # depot = mtf_underlyings
+    # depot_name = "mtf_underlyings"
     # depot = my_mega_trend_folger
     # depot = depot_900_prozent
     # depot = etf_depot
@@ -107,6 +112,10 @@ async def main():
         f"✅ Analysis complete! Processed {len(results)} out of {total_securities} securities successfully."
     )
     print(f"{'=' * 80}\n")
+
+    # Save results for historical comparison (Excel format with proper formatting)
+    if results:
+        save_results_to_xlsx(results, depot_name=depot_name)
 
     to_email = "stefan.fries.burgdorf@gmx.de"  # noqa: F841
     subject = "Securities Analysis and Recommendations"  # noqa: F841
