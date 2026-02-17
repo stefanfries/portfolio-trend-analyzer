@@ -15,8 +15,8 @@
 🔄 Store analysis results and historical signals in MongoDB
 🔄 Sync with real portfolio:
 
-   - **BUY signals**: Only actionable if WKN not currently owned
-   - **SELL signals**: Only actionable if WKN currently in portfolio
+- **BUY signals**: Only actionable if WKN not currently owned
+- **SELL signals**: Only actionable if WKN currently in portfolio
 
 🔄 Track recommendation history and performance
 
@@ -40,14 +40,21 @@
 
 ## Recent Updates
 
-### 2026-02-17: Documentation Restructuring
+### 2026-02-17: Documentation Restructuring & Planning Updates
 
-**Changes:**
+**Documentation Changes:**
 
 - Separated algorithm validation into dedicated document ([ALGORITHM_VALIDATION.md](ALGORITHM_VALIDATION.md))
 - Cleaned up README.md to focus on installation and usage
 - Consolidated development roadmap in IMPLEMENTATION_PLAN.md
 - Organized all planning documents in `/docs` folder
+
+**Planning Updates:**
+
+- Added CI/CD setup to Phase 1 (Step 8b) for GitHub Actions workflows and status badges
+- Updated MongoDB driver from Motor to PyMongo 4.8+ (Motor is being deprecated)
+  - PyMongo now has native async/await support, making Motor obsolete
+  - Updated all references in Phase 2 MongoDB implementation steps
 
 ### 2026-02-10: Critical Bug Fixes and New Features
 
@@ -367,6 +374,43 @@ reports/                # Daily HTML reports
 - Test HT8UZB (known crash 31.01.2026) → should detect SELL
 - Test stable ETF → should show mostly HOLD
 
+### **Step 8b: CI/CD Setup**
+
+**Status:** ⏳ Planned
+
+**Goal:** Implement continuous integration and deployment pipelines
+
+**Tasks:**
+
+1. **Create GitHub Actions workflows:**
+   - `.github/workflows/ci.yml` - Code quality checks
+     - Run ruff linting
+     - Check code formatting
+     - Verify imports and type hints
+   - `.github/workflows/build.yml` - Build and test
+     - Install dependencies with uv
+     - Run test suite
+     - Verify application starts successfully
+
+2. **Add status badges to README.md:**
+   - CI status badge (code quality)
+   - Build status badge
+   - Python version badge
+   - License badge
+   - uv badge
+
+3. **Configure workflow triggers:**
+   - Run on every push to main
+   - Run on all pull requests
+   - Optional: scheduled daily runs
+
+**Benefits:**
+
+- Automatic code quality enforcement
+- Catch errors before they reach main branch
+- Visual status indicators for project health
+- Foundation for automated deployments in Phase 3
+
 ---
 
 ## Phase 2 Implementation (MongoDB Integration)
@@ -421,11 +465,32 @@ reports/                # Daily HTML reports
 
 **File:** `app/db.py` (new file)
 
+**Note:** Use PyMongo 4.8+ with native async support (Motor is being deprecated)
+
+**Example Implementation:**
+
+```python
+from pymongo import AsyncMongoClient
+from app.settings import settings
+
+# Connection
+async def get_db_connection() -> AsyncMongoClient:
+    """Get async MongoDB client using PyMongo's native async support."""
+    client = AsyncMongoClient(settings.MONGODB_URI)
+    return client[settings.MONGODB_DATABASE]
+
+# Musterdepot operations
+async def fetch_wkns_from_musterdepot(depot_name: str) -> list[str]:
+    db = await get_db_connection()
+    depot = await db.musterdepot_collection.find_one({"name": depot_name})
+    return depot["wkns"] if depot else []
+```
+
 **Functions:**
 
 ```python
 # Connection
-async def get_db_connection() -> AsyncIOMotorClient
+async def get_db_connection() -> AsyncMongoClient
 
 # Musterdepot operations
 async def fetch_wkns_from_musterdepot(depot_name: str) -> list[str]
@@ -497,9 +562,11 @@ MONGODB_DATABASE=portfolio_analyzer
 ```toml
 dependencies = [
     # ... existing ...
-    "motor>=3.3.0",  # Async MongoDB driver
+    "pymongo>=4.8.0",  # MongoDB driver with native async support
 ]
 ```
+
+**Note:** PyMongo 4.8+ includes native async/await support. Motor driver is being deprecated and should not be used for new projects.
 
 ---
 
@@ -732,6 +799,8 @@ az monitor metrics list ...
 - [ ] Analysis completes in <5 minutes
 - [ ] Clean logs, no errors
 - [ ] High confidence signals are accurate
+- [ ] CI/CD pipelines configured and passing
+- [ ] Status badges visible in README
 
 ### Phase 2 (MongoDB Integration)
 
@@ -767,6 +836,7 @@ az monitor metrics list ...
 | Azure costs | Low | Container only runs for short periods |
 | Email not delivered | Medium | Backup: save report to file, SMS alerts |
 | Docker build failures | Low | CI/CD pipeline with tests |
+| Code quality regressions | Medium | Automated CI checks on every commit |
 
 ---
 
@@ -778,6 +848,7 @@ az monitor metrics list ...
 - ✅ Step 3-4: Integration & email (Day 3-4)
 - ✅ Step 5-7: Logging, optimization, structure (Day 5)
 - ✅ Step 8: Testing & validation (Week 2)
+- ⏳ Step 8b: CI/CD setup (Week 2)
 
 ### Week 3-4: Phase 2 (MongoDB)
 

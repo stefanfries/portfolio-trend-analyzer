@@ -33,7 +33,7 @@ The system generates 4 distinct signal types:
 **Results:**
 
 | Signal Type | Count | Percentage | Description |
-|------------|-------|------------|-------------|
+| ----------- | ----- | ---------- | ----------- |
 | STRONG_SELL | 11 | 65% | Correctly identified major crashes |
 | BUY | 1 | 6% | Confirmed strong uptrend |
 | HOLD | 5 | 29% | Ranging markets or weak trends |
@@ -45,7 +45,7 @@ The system generates 4 distinct signal types:
 Found **4 catastrophic failure cases** where the traditional parabola fitting algorithm recommended "BUY" but the securities had severe drawdowns:
 
 | WKN | Parabola Signal | Actual Drawdown | Multi-Indicator Signal |
-|-----|-----------------|-----------------|------------------------|
+| --- | --------------- | --------------- | ---------------------- |
 | Security A | BUY | -90% | STRONG_SELL |
 | Security B | BUY | -65% | STRONG_SELL |
 | Security C | BUY | -45% | STRONG_SELL |
@@ -53,7 +53,7 @@ Found **4 catastrophic failure cases** where the traditional parabola fitting al
 
 **Key Findings:**
 
-1. **Parabola Fitting Limitations**: 
+1. **Parabola Fitting Limitations**:
    - Cannot distinguish between noise and real trend reversals
    - Overfits to recent price movements
    - No volatility awareness
@@ -131,6 +131,7 @@ HOURLY_CONFIG = {
 The multi-indicator trend detection system has proven significantly more reliable than traditional parabola fitting, particularly in avoiding catastrophic "BUY" signals during major drawdowns. The system successfully filters noise while maintaining sensitivity to genuine trend breaks.
 
 **Success Rate (Preliminary)**:
+
 - 0% false "BUY" signals during major crashes (vs 23% with parabola fitting)
 - 65% of securities correctly identified as STRONG_SELL during market stress
 - Conservative HOLD signals (29%) indicate proper risk management
@@ -139,4 +140,4 @@ Further validation through systematic backtesting is recommended before producti
 
 ---
 
-*Last Updated: 2026-02-17*
+Last Updated: 2026-02-17

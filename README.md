@@ -51,6 +51,7 @@ uv run python -m app.main
 ```
 
 The application will:
+
 1. Fetch current price data for all securities in the selected depot
 2. Perform trend analysis using multiple indicators
 3. Generate buy/sell/hold recommendations
