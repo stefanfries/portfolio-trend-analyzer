@@ -4,23 +4,22 @@ Advanced trend detection and analysis system for options and warrants trading wi
 
 ## Features
 
-### ✅ Current Capabilities
-
 - **Multi-Indicator Trend Detection**: Combines Supertrend, ADX, directional indicators, ATR, and EMAs
 - **Volatility-Adjusted Thresholds**: Adapts to market conditions automatically
 - **Parabola Fitting Analysis**: Traditional trend prediction using polynomial fitting
 - **Automated Chart Generation**: Candlestick charts for all analyzed securities
 - **Console Progress Tracking**: Real-time status updates during analysis
 - **Configurable Timeframes**: Optimized parameters for hourly and daily data
+- **Excel Export**: Saves analysis results with proper formatting
 
-### 🎯 Signal Types
+### Signal Types
 
 - **STRONG_SELL**: Severe drawdowns (>30%) or critical trend breaks
 - **SELL**: Significant drawdowns (>20%) with confirmed downtrend
 - **BUY**: Strong rallies (>20%) with confirmed uptrend  
 - **HOLD**: Mixed signals or ranging market
 
-### 📊 Technical Indicators
+### Technical Indicators
 
 - **Supertrend**: Trend direction with ATR-based bands
 - **ADX (Average Directional Index)**: Trend strength measurement
@@ -28,22 +27,6 @@ Advanced trend detection and analysis system for options and warrants trading wi
 - **ATR (Average True Range)**: Volatility normalization
 - **EMA Crossovers**: 8/21 period confirmation filter
 - **Drawdown/Rally Detection**: From rolling highs/lows
-
-## Recent Updates (2026-02-10)
-
-### 🚨 Critical Bug Fixes
-
-- **Data Ordering**: Fixed reverse chronological data from API causing stale price calculations
-- **Threshold Logic**: Corrected percentage comparisons (removed 100x multiplication error)
-- **Lookback Window**: Extended from 20 to 240 hours for proper trend capture
-- **Type Handling**: Fixed pandas Series vs numpy array operations
-
-### ✨ New Features
-
-- Trend detection system with 4-level signal confidence
-- Debug output showing data validation (highs/lows/current)
-- Windows console UTF-8 encoding for emoji support
-- Configuration-driven parameters (trend_config.py)
 
 ## Installation
 
@@ -59,20 +42,40 @@ uv sync
 uv run python -m app.main
 ```
 
+## Usage
+
+Run the analysis on your selected depot:
+
+```bash
+uv run python -m app.main
+```
+
+The application will:
+1. Fetch current price data for all securities in the selected depot
+2. Perform trend analysis using multiple indicators
+3. Generate buy/sell/hold recommendations
+4. Create candlestick charts in the `charts/` folder
+5. Save results to Excel in the `results/` folder
+
 ## Configuration
 
-Edit `app/main.py` to select your depot:
+### Select Portfolio
+
+Edit [app/main.py](app/main.py) to choose your depot:
 
 ```python
 depot = mega_trend_folger  # or test_depot, etf_depot, etc.
+depot_name = "mega_trend_folger"
 ```
 
-Adjust parameters in `app/trend_config.py`:
+### Adjust Algorithm Parameters
 
-- Lookback windows
-- Threshold percentages  
-- ADX minimum strength
-- EMA periods
+Edit [app/trend_config.py](app/trend_config.py) to customize:
+
+- Lookback windows for trend detection
+- Threshold percentages for buy/sell signals  
+- ADX minimum strength requirements
+- EMA periods for trend confirmation
 
 ## Project Structure
 
@@ -86,58 +89,24 @@ portfolio-trend-analyzer/
 │   ├── reader.py            # API data fetching
 │   ├── visualizer.py        # Chart generation
 │   ├── depots.py            # Portfolio definitions
+│   ├── results_saver.py     # Excel export
 │   ├── models.py            # Data models
-│   └── settings.py          # API settings
+│   ├── settings.py          # API settings
+│   └── notifier.py          # Email notifications
+├── charts/                  # Generated candlestick charts
+├── results/                 # Excel analysis results
 ├── docs/
-│   ├── IMPLEMENTATION_PLAN.md       # Roadmap and architecture
+│   ├── IMPLEMENTATION_PLAN.md       # Development roadmap
+│   ├── ALGORITHM_VALIDATION.md      # Performance metrics
 │   └── SESSION_NOTES_2026-02-10.md  # Development log
 └── README.md                # This file
 ```
 
-## Development Roadmap
+## Documentation
 
-### Phase 1: Core Algorithm ✅ (In Progress - 37.5% complete)
-
-- ✅ Configuration system
-- ✅ Multi-indicator trend detection
-- ✅ Main loop integration
-- ⏳ Enhanced email reporting
-- ⏳ Logging system
-- ⏳ Testing & validation
-
-### Phase 2: MongoDB Integration (Planned)
-
-- Fetch instruments from database
-- Store analysis results
-- Track recommendation history
-- Portfolio synchronization
-
-### Phase 3: Cloud Deployment (Planned)
-
-- Docker containerization
-- Azure deployment
-- Automated scheduling
-- Email notifications
-
-### Phase 4: Production Features (Planned)
-
-- Web dashboard
-- SMS alerts
-- Performance tracking
-- Backtesting framework
-
-## Algorithm Validation
-
-Recent analysis of 17 securities showed:
-
-- **11 STRONG_SELL** signals (65%) - correctly identified major crashes
-- **1 BUY** signal (6%) - confirmed strong uptrend
-- **5 HOLD** signals (29%) - ranging markets or weak trends
-
-**vs Parabola Fitting:**
-
-- Found 4 catastrophic cases where parabola said "BUY" but securities had -35% to -90% drawdowns
-- Trend detection correctly filtered noise with ADX strength requirements
+- **[IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)**: Development roadmap and architecture
+- **[ALGORITHM_VALIDATION.md](docs/ALGORITHM_VALIDATION.md)**: Algorithm performance and validation results
+- **[SESSION_NOTES_2026-02-10.md](docs/SESSION_NOTES_2026-02-10.md)**: Development log and bug fixes
 
 ## License
 

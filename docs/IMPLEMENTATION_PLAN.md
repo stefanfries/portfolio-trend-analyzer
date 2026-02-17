@@ -38,6 +38,43 @@
 
 ---
 
+## Recent Updates
+
+### 2026-02-17: Documentation Restructuring
+
+**Changes:**
+
+- Separated algorithm validation into dedicated document ([ALGORITHM_VALIDATION.md](ALGORITHM_VALIDATION.md))
+- Cleaned up README.md to focus on installation and usage
+- Consolidated development roadmap in IMPLEMENTATION_PLAN.md
+- Organized all planning documents in `/docs` folder
+
+### 2026-02-10: Critical Bug Fixes and New Features
+
+**🚨 Critical Bug Fixes:**
+
+- **Data Ordering**: Fixed reverse chronological data from API causing stale price calculations
+- **Threshold Logic**: Corrected percentage comparisons (removed 100x multiplication error)
+- **Lookback Window**: Extended from 20 to 240 hours for proper trend capture
+- **Type Handling**: Fixed pandas Series vs numpy array operations
+
+**✨ New Features:**
+
+- Trend detection system with 4-level signal confidence (STRONG_SELL, SELL, BUY, HOLD)
+- Debug output showing data validation (highs/lows/current prices)
+- Windows console UTF-8 encoding for emoji support
+- Configuration-driven parameters ([trend_config.py](../app/trend_config.py))
+- Excel output with proper formatting for results tracking
+
+**📊 Validation Results:**
+
+- Analyzed 17 securities with multi-indicator system
+- Successfully identified 11 STRONG_SELL signals (65%)
+- Avoided 4 catastrophic cases where parabola fitting recommended "BUY" during -35% to -90% drawdowns
+- See [ALGORITHM_VALIDATION.md](ALGORITHM_VALIDATION.md) for detailed results
+
+---
+
 ## Technical Architecture
 
 ### Current State (Development)
@@ -77,6 +114,7 @@ Azure Cloud
 **Status:** ✅ Complete - Configuration created with optimized parameters for hourly/daily timeframes
 
 **Bug Fixes:**
+
 - Fixed lookback_window: 20 → 240 hours (to capture full 14-day history)
 - Fixed thresholds: 0.20 → 20.0 (percentage values, not decimals)
 
@@ -216,6 +254,7 @@ def get_config(timeframe: str = 'hourly') -> dict:
 **Status:** ✅ Complete - Trend detection integrated, debug output added
 
 **Bug Fixes:**
+
 - Fixed Windows console encoding (UTF-8 for emoji support)
 - Fixed dictionary key access (action/metrics structure)
 - Added debug output showing data range validation
