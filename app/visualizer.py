@@ -5,149 +5,157 @@ import matplotlib
 import mplfinance as mpf
 import numpy as np
 import pandas as pd
+import talib
 
-# import pandas_ta as ta
-
-# from app.indicators import pandas_supertrend
+from app.indicators import supertrend
+from app.trend_config import get_config
 
 matplotlib.use("Agg")  # Use non-interactive backend - saves files without showing GUI
 
 
-def plot_candlestick(df: pd.DataFrame, wkn: str, name: str) -> None:
-    """Plot a candlestick chart for the given security data."""
+def plot_candlestick(df: pd.DataFrame, wkn: str, name: str, timeframe: str = "hourly") -> None:
+    """Plot a candlestick chart with technical indicators.
+
+    Creates a 2-panel chart:
+    - Panel 0: Candlesticks + Supertrend + EMAs
+    - Panel 1: ADX + Plus DI + Minus DI
+
+    Args:
+        df: DataFrame with OHLC data
+        wkn: Security identifier
+        name: Security name
+        timeframe: 'hourly' or 'daily' for indicator configuration
+    """
 
     # Ensure charts directory exists
     charts_dir = Path("charts")
     charts_dir.mkdir(exist_ok=True)
 
-    df = df.set_index("datetime")  # Make the datetime column an index
-    if "volume" in df.columns and df["volume"].nunique() == 1:
-        df["volume"] += 1  # Avoids singular transformation error
+    # Get configuration for indicator parameters
+    config = get_config(timeframe)
 
-    df = df.sort_index(ascending=True)
+    # Prepare data
+    df_plot = df.copy()
+    df_plot = df_plot.set_index("datetime")
+    df_plot = df_plot.sort_index(ascending=True)
 
-    # Compute RSI (14-period) using TA-Lib
-    # df["RSI"] = talib.RSI(df["close"], timeperiod=14)
+    # Extract arrays for indicator calculation
+    high = df_plot["high"].to_numpy()
+    low = df_plot["low"].to_numpy()
+    close = df_plot["close"].to_numpy()
 
-    # Create RSI subplot
-    # rsi_plot = mpf.make_addplot(df["RSI"], panel=1, color="blue", secondary_y=False)
+    # ========== Panel 0: Price Chart with Supertrend and EMAs ==========
 
-    # Calculate Bollinger Bands using TA-Lib
-    # df["BBU"], _, df["BBL"] = talib.BBANDS(
-    #     df["close"], timeperiod=20, nbdevup=2, nbdevdn=2
-    # )
+    # Calculate Supertrend
+    st_values, st_direction = supertrend(
+        df_plot["high"],
+        df_plot["low"],
+        df_plot["close"],
+        atr_period=config["supertrend_atr_period"],
+        multiplier=config["supertrend_multiplier"],
+    )
 
-    """
-    # Calculate Donchian Channels (20-period high/low)
-    df["DCL"] = df["low"].rolling(20).min()  # Lower boundary
-    df["DCU"] = df["high"].rolling(20).max()  # Upper boundary
+    # Separate uptrend and downtrend for different colors
+    supertrend_up = np.where(st_direction > 0, st_values, np.nan)
+    supertrend_down = np.where(st_direction < 0, st_values, np.nan)
 
-    # Linear Regression Trendlines (Last 20 periods)
-    n = 20  # Number of periods to consider for trendlines
-    recent_df = df[-n:]  # Select last 'n' periods
+    # Calculate EMAs
+    ema_fast = talib.EMA(close, timeperiod=config["ema_fast_period"])
+    ema_slow = talib.EMA(close, timeperiod=config["ema_slow_period"])
 
-    # Fit regression for Support & Resistance
-    x = np.arange(n)
-    slope_low, intercept_low, _, _, _ = linregress(x, recent_df["low"])
-    slope_high, intercept_high, _, _, _ = linregress(x, recent_df["high"])
+    # ========== Panel 1: ADX and Directional Indicators ==========
 
-    # Compute trendlines only for the last 'n' periods
-    trendline_x = np.arange(n)  # Use only the range of the last 'n' periods
-    support_trendline = slope_low * trendline_x + intercept_low
-    resistance_trendline = slope_high * trendline_x + intercept_high
+    adx = talib.ADX(high, low, close, timeperiod=config["adx_period"])
+    plus_di = talib.PLUS_DI(high, low, close, timeperiod=config["adx_period"])
+    minus_di = talib.MINUS_DI(high, low, close, timeperiod=config["adx_period"])
 
-    # Create arrays for trendlines with same length as original dataframe
-    trendline_support_full = np.full(len(df), np.nan)
-    trendline_resistance_full = np.full(len(df), np.nan)
+    # Create threshold line for ADX at 25
+    adx_threshold = np.full(len(df_plot), config["min_adx_strength"])
 
-    # Place the computed trendlines only on the last 'n' periods
-    trendline_support_full[-n:] = support_trendline
-    trendline_resistance_full[-n:] = resistance_trendline
+    # ========== Create Additional Plots ==========
 
-    ## Compute trendlines for full data
-    # df["Support_Trendline"] = slope_low * np.arange(len(df)) + intercept_low
-    # df["Resistance_Trendline"] = slope_high * np.arange(len(df)) + intercept_high
-
-    """
-    # Compute Supertrend indicator
-    # df["supertrend"], df["direction"] = supertrend(df["high"], df["low"], df["close"])
-    # df.ta.supertrend(atr_period=7, multiplier=3, append=True)
-
-    # Separate Uptrend & Downtrend values for plotting
-    # supertrend_up = np.where(df["direction"] > 0, df["supertrend"], np.nan)
-    # supertrend_down = np.where(df["direction"] < 0, df["supertrend"], np.nan)
-    # supertrend_up = np.where(df["SUPERTd_7_3.0"] > 0, df["SUPERTs_7_3.0"], np.nan)
-    # supertrend_down = np.where(df["SUPERTd_7_3.0"] < 0, df["SUPERTl_7_3.0"], np.nan)
-
-    # Create plots for the Supertrend indicator
-    # ap_up = (
-    #     mpf.make_addplot(supertrend_up, panel=0, color="green", secondary_y=False)
-    #     if not np.all(np.isnan(supertrend_up))
-    #     else None
-    # )
-    # ap_down = (
-    #     mpf.make_addplot(supertrend_down, panel=0, color="red", secondary_y=False)
-    #     if not np.all(np.isnan(supertrend_down))
-    #     else None
-    # )
-
-    # Convert datetime index to numerical values using mdates.date2num
-
-    df["index_number"] = np.arange(len(df))
-    # Quadratic regression (parabola fit)
-    coeffs = np.polyfit(df["index_number"], df["close"], 2)
-    a, b, c = coeffs  # Coefficients of the parabola
-
-    # def parabola function
-    def parabola(x):
-        return a * x**2 + b * x + c
-
-    df["parabola"] = df["index_number"].map(parabola)
-
-    # Plotting with mplfinance
     apds = [
-        # mpf.make_addplot(
-        #     df["BBL"], color="blue", linestyle="dotted"
-        # ),  # Bollinger Lower Band
-        # mpf.make_addplot(
-        #     df["BBU"], color="blue", linestyle="dotted"
-        # ),  # Bollinger Upper Band
-        # mpf.make_addplot(
-        #     df["DCL"], color="purple", linestyle="dashed"
-        # ),  # Donchian Lower
-        # mpf.make_addplot(
-        #     df["DCU"], color="purple", linestyle="dashed"
-        # ),  # Donchian Upper
-        # mpf.make_addplot(trendline_support_full, color="green"),  # Support Trendline
-        # mpf.make_addplot(
-        #     trendline_resistance_full, color="red"
-        # ),  # Resistance Trendline
-        #     ap_up,
-        #     ap_down,
-        # mpf.make_addplot(df["RSI"], panel=1, color="blue", secondary_y=False),
-        mpf.make_addplot(df["parabola"], color="red", linestyle="dashed"),
+        # Panel 0: Price chart overlays
+        mpf.make_addplot(
+            supertrend_up,
+            panel=0,
+            color="green",
+            width=1.5,
+            secondary_y=False,
+            label="Supertrend Up",
+        ),
+        mpf.make_addplot(
+            supertrend_down,
+            panel=0,
+            color="red",
+            width=1.5,
+            secondary_y=False,
+            label="Supertrend Down",
+        ),
+        mpf.make_addplot(
+            ema_fast,
+            panel=0,
+            color="blue",
+            width=1,
+            secondary_y=False,
+            label=f"EMA{config['ema_fast_period']}",
+        ),
+        mpf.make_addplot(
+            ema_slow,
+            panel=0,
+            color="orange",
+            width=1,
+            secondary_y=False,
+            label=f"EMA{config['ema_slow_period']}",
+        ),
+        # Panel 1: ADX and directional indicators
+        mpf.make_addplot(adx, panel=1, color="purple", width=1.5, secondary_y=False, ylabel="ADX"),
+        mpf.make_addplot(
+            plus_di, panel=1, color="green", width=1, secondary_y=False, label="+DI (bullish)"
+        ),
+        mpf.make_addplot(
+            minus_di, panel=1, color="red", width=1, secondary_y=False, label="-DI (bearish)"
+        ),
+        mpf.make_addplot(
+            adx_threshold,
+            panel=1,
+            color="gray",
+            width=0.8,
+            linestyle="dashed",
+            secondary_y=False,
+            label="ADX=25",
+        ),
     ]
-    apds = [ap for ap in apds if ap is not None]  # Remove None values
 
-    # Define figure with two panels (candlestick + RSI)
+    # Remove None values
+    apds = [ap for ap in apds if ap is not None]
+
+    # ========== Create the Chart ==========
+
     chart_filename = f"candlestick_{wkn}_{date.today():%Y-%m-%d}.png"
     chart_path = charts_dir / chart_filename
 
-    mpf.plot(
-        data=df,
-        # mav=(5, 10),
+    # Create custom style with larger figure
+    custom_style = mpf.make_mpf_style(base_mpf_style="charles")
+
+    # Calculate y-axis limit for price panel (0 to max)
+    max_price = max(df_plot["high"].max(), ema_fast.max(), ema_slow.max(), np.nanmax(st_values))
+    ylim_main = (0, max_price * 1.05)  # Add 5% padding at top
+
+    fig, axes = mpf.plot(
+        data=df_plot,
         type="candle",
-        # show_nontrading=True,
-        # volume=True,
-        style="charles",
-        title=f"Analysis for {name}",
-        savefig=str(chart_path),
-        returnfig=True,  # Get the fiure and axis to modify and save it later
-        # addplot=rsi_plot,
-        # panel_ratios=(3, 1),  # Larger main panel, smaller RSI panel
+        style=custom_style,
+        title=f"{name} ({wkn}) - Multi-Indicator Analysis",
         ylabel="Price (€)",
         addplot=apds,
-        # ylabel_lower="RSI",
+        panel_ratios=(3, 1),  # Price panel larger, ADX panel smaller
+        figsize=(14, 8),  # 2-panel layout
+        ylim=ylim_main,
+        returnfig=True,
     )
 
-    print(f"📊 Chart saved as {chart_path}. Open it manually to view.")
+    # Save the figure
+    fig.savefig(str(chart_path), dpi=100, bbox_inches="tight")
+
+    print(f"📊 Chart saved as {chart_path}")

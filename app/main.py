@@ -91,7 +91,7 @@ async def main():
             f"Trend Signal: {trend_signal['action']} (Drawdown: {trend_signal['metrics']['drawdown_pct']:.2f}%, ADX: {trend_signal['metrics']['adx']:.1f})"
         )
 
-        plot_candlestick(df, wkn, name)  # type: ignore
+        plot_candlestick(df, wkn, name, timeframe="hourly")  # type: ignore
 
         # Collect results for email report
         results.append(

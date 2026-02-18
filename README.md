@@ -21,12 +21,14 @@ Advanced trend detection and analysis system for options and warrants trading wi
 
 ### Technical Indicators
 
-- **Supertrend**: Trend direction with ATR-based bands
-- **ADX (Average Directional Index)**: Trend strength measurement
-- **Plus/Minus DI**: Directional movement indicators
-- **ATR (Average True Range)**: Volatility normalization
-- **EMA Crossovers**: 8/21 period confirmation filter
-- **Drawdown/Rally Detection**: From rolling highs/lows
+All indicators calibrated for **hourly data** with 14 trading hours/day (08:00-22:00), 5 days/week:
+
+- **Supertrend**: Trend direction with ATR-based bands (14-period = 1 trading day)
+- **ADX (Average Directional Index)**: Trend strength measurement (14-period, minimum 25 required)
+- **Plus/Minus DI**: Directional movement indicators (14-period)
+- **ATR (Average True Range)**: Volatility normalization (14-period = 1 trading day)
+- **EMA Crossovers**: 14/42 period confirmation filter (1 day / 3 days)
+- **Drawdown/Rally Detection**: From rolling highs/lows (140-period = 10 trading days)
 
 ## Installation
 

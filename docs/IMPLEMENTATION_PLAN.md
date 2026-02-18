@@ -40,6 +40,21 @@
 
 ## Recent Updates
 
+### 2026-02-18: Parameter Timeframe Corrections
+
+**Algorithm Updates:**
+
+- **Timeframe Corrections**: Fixed all parameter comments to reflect actual trading hours (08:00-22:00 = 14 hours/day, 5 days/week)
+- **Parameter Standardization**: Updated to 14-period indicators (1 trading day) for consistency
+  - `supertrend_atr_period`: 7 → 14 (0.5 days → 1 day)
+  - `adx_period`: 10 → 14 (0.71 days → 1 day)
+  - `ema_fast_period`: 8 → 14 (0.57 days → 1 day)
+  - `ema_slow_period`: 21 → 42 (1.5 days → 3 days)
+- **Lookback Window**: Adjusted from 240 to 140 periods (17.1 trading days → 10 trading days)
+- **Documentation**: Updated all docs with correct timeframe calculations
+
+**Impact**: More balanced and standard indicator behavior, aligned with common technical analysis practices.
+
 ### 2026-02-17: Documentation Restructuring & Planning Updates
 
 **Documentation Changes:**
@@ -62,7 +77,7 @@
 
 - **Data Ordering**: Fixed reverse chronological data from API causing stale price calculations
 - **Threshold Logic**: Corrected percentage comparisons (removed 100x multiplication error)
-- **Lookback Window**: Extended from 20 to 240 hours for proper trend capture
+- **Lookback Window**: Extended from 20 to 240 hours for proper trend capture (later corrected to 140 in 2026-02-18)
 - **Type Handling**: Fixed pandas Series vs numpy array operations
 
 **✨ New Features:**
@@ -125,52 +140,63 @@ Azure Cloud
 - Fixed lookback_window: 20 → 240 hours (to capture full 14-day history)
 - Fixed thresholds: 0.20 → 20.0 (percentage values, not decimals)
 
+**2026-02-18 Update:**
+
+- Corrected timeframes based on actual trading hours (14h/day, 5 days/week)
+- Updated lookback_window: 240 → 140 periods (10 trading days, not 17)
+- Standardized indicators to 14-period (1 trading day)
+- Updated EMA periods: 8/21 → 14/42 (1 day / 3 days)
+
 **Content:**
 
 ```python
-"""Configuration for trend detection algorithms."""
+"""Configuration for trend detection algorithms.
 
-# Hourly candle configuration (14 days ≈ 336 periods)
+Note: Trading hours are 08:00-22:00 (14 hours/day), 5 days/week.
+      14 periods = 1 trading day, 70 periods = 1 week
+"""
+
+# Hourly candle configuration (14 days ≈ 196 periods)
 HOURLY_CONFIG = {
     # Supertrend parameters
-    'supertrend_atr_period': 7,      # Fast reaction for volatile instruments
+    'supertrend_atr_period': 14,     # 1 trading day - standard ATR calculation
     'supertrend_multiplier': 3.5,    # Wider bands to reduce false signals
     
     # ADX trend strength
-    'adx_period': 10,                # Shorter for hourly data
-    'atr_period': 14,                # Standard ATR period
+    'adx_period': 14,                # 1 trading day - standard ADX calculation
+    'atr_period': 14,                # 1 trading day
     
     # Drawdown/Rally detection
-    'lookback_window': 20,           # Periods to find recent high/low (~2.5 days)
+    'lookback_window': 140,          # 10 trading days (2 weeks)
     
     # Signal thresholds
-    'min_threshold': 0.20,           # 20% - significant move
-    'severe_threshold': 0.30,        # 30% - critical move
+    'min_threshold': 20.0,           # 20% - significant move
+    'severe_threshold': 30.0,        # 30% - critical move
     'min_adx_strength': 25,          # Minimum ADX for "strong trend"
     
     # Optional confirmation
     'use_ema_confirmation': True,
-    'ema_fast_period': 8,            # ~1 trading day
-    'ema_slow_period': 21,           # ~2.5 trading days
+    'ema_fast_period': 14,           # 1 trading day - daily trend
+    'ema_slow_period': 42,           # 3 trading days - multi-day trend
     
     # Volatility adjustment
     'use_dynamic_thresholds': True,
-    'volatility_quantile': 0.75,    # 75th percentile
+    'volatility_quantile': 0.75,     # 75th percentile
 }
 
-# Daily candle configuration (1 month ≈ 22 periods)
+# Daily candle configuration (1 month ≈ 22 trading days)
 DAILY_CONFIG = {
-    'supertrend_atr_period': 10,
+    'supertrend_atr_period': 10,     # 10 trading days
     'supertrend_multiplier': 3.0,
-    'adx_period': 14,
-    'atr_period': 14,
-    'lookback_window': 10,           # ~2 weeks
-    'min_threshold': 0.20,
-    'severe_threshold': 0.30,
+    'adx_period': 14,                # 14 trading days - standard
+    'atr_period': 14,                # 14 trading days
+    'lookback_window': 10,           # 10 trading days (2 weeks)
+    'min_threshold': 20.0,
+    'severe_threshold': 30.0,
     'min_adx_strength': 25,
     'use_ema_confirmation': True,
-    'ema_fast_period': 5,
-    'ema_slow_period': 13,
+    'ema_fast_period': 5,            # 5 trading days (1 week)
+    'ema_slow_period': 13,           # 13 trading days (~2.5 weeks)
     'use_dynamic_thresholds': True,
     'volatility_quantile': 0.75,
 }
