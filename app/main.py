@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 import pandas as pd
 
-from app.analysis import detect_trend_break, fit_parabola, generate_recommendation
+from app.analysis import detect_trend_break
 
 # Fix Windows console encoding for emoji support
 if sys.platform == "win32":
@@ -72,9 +72,6 @@ async def main():
             f"Analysing history of {wkn} ({name}), last {history_days} days, interval: {interval}"
         )
         print(f"API returned data from {api_start} to {api_end} ({len(df)} data points)")
-        parabola_parms = fit_parabola(df)
-        recommendation = generate_recommendation(parabola_parms)
-        print(f"Recommendation: {recommendation}")
 
         # Detect trend breaks using multi-indicator analysis
         trend_signal = detect_trend_break(df, timeframe="hourly")
@@ -94,15 +91,19 @@ async def main():
         plot_candlestick(df, wkn, name, timeframe="hourly")  # type: ignore
 
         # Collect results for email report
+        supertrend_direction = (
+            "UP" if trend_signal["metrics"]["supertrend_direction"] == 1 else "DOWN"
+        )
         results.append(
             {
                 "WKN": wkn,
                 "Name": name,
-                "Recommendation": recommendation,
+                "Supertrend": supertrend_direction,
                 "Trend Signal": trend_signal["action"],
-                "Drawdown %": f"{trend_signal['metrics']['drawdown_pct']:.2f}",
                 "ADX": f"{trend_signal['metrics']['adx']:.1f}",
+                "Drawdown %": f"{trend_signal['metrics']['drawdown_pct']:.2f}",
                 "Current Price": f"{df['close'].iloc[-1]:.2f} €",
+                "Reason": trend_signal["reason"],
             }
         )
         print(f"{'-' * 80}\n")

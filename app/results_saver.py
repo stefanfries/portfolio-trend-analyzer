@@ -84,8 +84,7 @@ def save_results_to_xlsx(results: list[dict], depot_name: str = "mega_trend_folg
     with pd.ExcelWriter(filename, engine="openpyxl") as writer:
         df.to_excel(writer, sheet_name="Analysis", index=False)
 
-        # Get the workbook and worksheet
-        workbook = writer.book
+        # Get the worksheet
         worksheet = writer.sheets["Analysis"]
 
         # Format columns

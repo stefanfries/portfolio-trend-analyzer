@@ -138,9 +138,15 @@ def plot_candlestick(df: pd.DataFrame, wkn: str, name: str, timeframe: str = "ho
     # Create custom style with larger figure
     custom_style = mpf.make_mpf_style(base_mpf_style="charles")
 
-    # Calculate y-axis limit for price panel (0 to max)
+    # Calculate y-axis limits for price panel (min to max with padding)
     max_price = max(df_plot["high"].max(), ema_fast.max(), ema_slow.max(), np.nanmax(st_values))
-    ylim_main = (0, max_price * 1.05)  # Add 5% padding at top
+    min_price = min(
+        df_plot["low"].min(), np.nanmin(ema_fast), np.nanmin(ema_slow), np.nanmin(st_values)
+    )
+
+    # Add 5% padding on both sides
+    price_range = max_price - min_price
+    ylim_main = (min_price - price_range * 0.05, max_price + price_range * 0.05)
 
     fig, axes = mpf.plot(
         data=df_plot,
@@ -154,6 +160,20 @@ def plot_candlestick(df: pd.DataFrame, wkn: str, name: str, timeframe: str = "ho
         ylim=ylim_main,
         returnfig=True,
     )
+
+    # Add separator line between panels
+    # axes[0] is main price panel, axes[2] is ADX panel
+    if len(axes) > 2:
+        # Add thick line on top and bottom of price panel
+        axes[0].spines["top"].set_linewidth(1)
+        axes[0].spines["top"].set_color("black")
+        axes[0].spines["bottom"].set_linewidth(1)
+        axes[0].spines["bottom"].set_color("black")
+        # Add thick line on top and bottom of ADX panel
+        axes[2].spines["top"].set_linewidth(1)
+        axes[2].spines["top"].set_color("black")
+        axes[2].spines["bottom"].set_linewidth(1)
+        axes[2].spines["bottom"].set_color("black")
 
     # Save the figure
     fig.savefig(str(chart_path), dpi=100, bbox_inches="tight")
