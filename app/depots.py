@@ -3,7 +3,7 @@ test_depot = [
 ]
 
 mega_trend_folger = [
-    "HT8UZB",  # Alphabet Inc.
+    "MM3GS6",  # Alphabet Inc.
     "HS4P7G",  # Amazon.com Inc.
     "JT2GHE",  # Meta Platforms Inc.
     "JH4WD6",  # Apple Inc.
@@ -14,7 +14,7 @@ mega_trend_folger = [
     "JK9V0Y",  # Nvidia Corporation
     "MM5J03",  # Newmont Corporation
     "JH5VLN",  # Blackrock Inc.
-    "HT93ZB",  # Allianz SE
+    "SJ7957",  # Allianz SE
     "MM0CVV",  # Applied Materials Inc.
     "MJ5417",  # Regeneron Pharmaceuticals Inc.
     "MM5HUZ",  # KLA Corp.
@@ -36,6 +36,7 @@ mtf_underlyings = [
     "DE0008404005",  # Allianz SE
     "US0382221051",  # Applied Materials Inc.
     "US4824801009",  # KLA Corp.
+    "US65339F1012",  # NextEra Energy Inc.
 ]
 
 my_mega_trend_folger = [

@@ -70,6 +70,7 @@ Found **4 catastrophic failure cases** where the traditional parabola fitting al
 Current optimized parameters for **hourly** timeframes (14-day analysis):
 
 **Note**: Trading hours are 08:00-22:00 (14 hours/day), 5 days/week.
+
 - 14 periods = 1 trading day
 - 70 periods = 1 trading week (5 days)
 - 140 periods = 10 trading days (2 calendar weeks)
