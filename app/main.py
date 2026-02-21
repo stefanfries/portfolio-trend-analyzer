@@ -29,7 +29,9 @@ from app.visualizer import plot_candlestick
 
 async def main():
     # Configuration
+    HISTORY_DAYS = 14
     TIMEFRAME = "hourly"  # Options: "hourly" or "daily"
+    INSTRUMENT_TYPE = "warrant"  # Options: "stock" or "warrant"
     INTERVAL_MAP = {"hourly": "hour", "daily": "day"}
 
     # depot = test_depot
@@ -44,7 +46,6 @@ async def main():
     # depot = etf_depot
     # depot = os_projekt_2025
 
-    history_days = 14
     results = []  # Collect all analysis results
 
     total_securities = len(depot)
@@ -56,7 +57,7 @@ async def main():
         print(f"📊 [{index}/{total_securities}] Processing {wkn}...")
         result = await datareader(
             wkn,
-            start=datetime.now() - timedelta(days=history_days),
+            start=datetime.now() - timedelta(days=HISTORY_DAYS),
             id_notation="preferred_id_notation_life_trading",
             interval=INTERVAL_MAP[TIMEFRAME],
         )  # type: ignore
@@ -73,12 +74,12 @@ async def main():
         api_start = metadata.get("start")
         api_end = metadata.get("end")
         print(
-            f"Analysing history of {wkn} ({name}), last {history_days} days, interval: {interval}"
+            f"Analysing history of {wkn} ({name}), last {HISTORY_DAYS} days, interval: {interval}"
         )
         print(f"API returned data from {api_start} to {api_end} ({len(df)} data points)")
 
         # Detect trend breaks using multi-indicator analysis
-        trend_signal = detect_trend_break(df, timeframe=TIMEFRAME)
+        trend_signal = detect_trend_break(df, timeframe=TIMEFRAME, instrument_type=INSTRUMENT_TYPE)
 
         # Debug: Show data range for verification
         data_high = df["high"].max()
