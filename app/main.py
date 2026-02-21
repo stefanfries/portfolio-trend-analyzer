@@ -28,6 +28,10 @@ from app.visualizer import plot_candlestick
 
 
 async def main():
+    # Configuration
+    TIMEFRAME = "hourly"  # Options: "hourly" or "daily"
+    INTERVAL_MAP = {"hourly": "hour", "daily": "day"}
+
     # depot = test_depot
     # depot = tsi_6i_aktien
     # depot = tsi_6i_faktor2
@@ -54,7 +58,7 @@ async def main():
             wkn,
             start=datetime.now() - timedelta(days=history_days),
             id_notation="preferred_id_notation_life_trading",
-            interval="hour",
+            interval=INTERVAL_MAP[TIMEFRAME],
         )  # type: ignore
 
         if result is None:
@@ -74,7 +78,7 @@ async def main():
         print(f"API returned data from {api_start} to {api_end} ({len(df)} data points)")
 
         # Detect trend breaks using multi-indicator analysis
-        trend_signal = detect_trend_break(df, timeframe="hourly")
+        trend_signal = detect_trend_break(df, timeframe=TIMEFRAME)
 
         # Debug: Show data range for verification
         data_high = df["high"].max()
@@ -88,7 +92,7 @@ async def main():
             f"Trend Signal: {trend_signal['action']} (Drawdown: {trend_signal['metrics']['drawdown_pct']:.2f}%, ADX: {trend_signal['metrics']['adx']:.1f})"
         )
 
-        plot_candlestick(df, wkn, name, timeframe="hourly")  # type: ignore
+        plot_candlestick(df, wkn, name, timeframe=TIMEFRAME)  # type: ignore
 
         # Collect results for email report
         supertrend_direction = (

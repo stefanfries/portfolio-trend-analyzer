@@ -6,9 +6,7 @@ from app.indicators import supertrend
 from app.trend_config import get_config
 
 
-def detect_trend_break(
-    df: pd.DataFrame, config: dict | None = None, timeframe: str = "hourly"
-) -> dict:
+def detect_trend_break(df: pd.DataFrame, timeframe: str = "hourly") -> dict:
     """Detect significant trend breaks using multi-indicator analysis.
 
     Combines Supertrend, ADX, directional indicators, and ATR-based volatility
@@ -17,8 +15,7 @@ def detect_trend_break(
 
     Args:
         df: DataFrame with OHLC data (columns: high, low, close, datetime)
-        config: Configuration dictionary (if None, uses default for timeframe)
-        timeframe: 'hourly' or 'daily' (used if config is None)
+        timeframe: 'hourly' or 'daily' - determines which config to use
 
     Returns:
         Dictionary containing:
@@ -33,8 +30,7 @@ def detect_trend_break(
         >>> print(f"{signal['action']}: {signal['reason']}")
     """
     # Get configuration
-    if config is None:
-        config = get_config(timeframe)
+    config = get_config(timeframe)
 
     # Extract data - supertrend needs Series, ta-lib needs numpy arrays
     high_series = df["high"]
