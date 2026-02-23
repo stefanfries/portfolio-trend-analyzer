@@ -18,7 +18,7 @@ mega_trend_folger = [
     "MM0CVV",  # Applied Materials Inc.
     "MJ5417",  # Regeneron Pharmaceuticals Inc.
     "MM5HUZ",  # KLA Corp.
-    "JH6S51",  # NextEra Energy Inc.
+    "SJ7J0G",  # NextEra Energy Inc.
 ]
 
 mtf_underlyings = [

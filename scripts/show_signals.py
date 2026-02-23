@@ -37,7 +37,7 @@ if len(holds) > 0:
         print(f"  Price: {row['Current Price']:.2f} EUR")
         print(f"  Drawdown: {row['Drawdown %']:.2%}")
         print(f"  ADX: {row['ADX']:.1f}")
-        print(f"  Recommendation: {row['Recommendation'][:70]}...")
+        print(f"  Reason: {row['Reason'][:70]}...")
 else:
     print("  None")
 
@@ -50,7 +50,7 @@ if len(buys) > 0:
         print(f"  Price: {row['Current Price']:.2f} EUR")
         print(f"  Drawdown: {row['Drawdown %']:.2%}")
         print(f"  ADX: {row['ADX']:.1f}")
-        print(f"  Recommendation: {row['Recommendation'][:70]}...")
+        print(f"  Reason: {row['Reason'][:70]}...")
 else:
     print("  None")
 
