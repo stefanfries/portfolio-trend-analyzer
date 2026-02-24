@@ -118,7 +118,7 @@ def save_results_to_xlsx(results: list[dict], depot_name: str = "mega_trend_folg
                 try:
                     if cell.value:
                         max_length = max(max_length, len(str(cell.value)))
-                except:
+                except Exception:
                     pass
             adjusted_width = min(max_length + 2, 50)  # Cap at 50
             worksheet.column_dimensions[column_letter].width = adjusted_width

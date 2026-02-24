@@ -6,7 +6,7 @@ mega_trend_folger = [
     "MM3GS6",  # Alphabet Inc.
     "HS4P7G",  # Amazon.com Inc.
     "JT2GHE",  # Meta Platforms Inc.
-    "JH4WD6",  # Apple Inc.
+    "SY026G",  # Apple Inc.
     "HS765P",  # Starbucks Corporation
     "MK74CT",  # GE Aerospace & Defense
     "MM2DRR",  # EssilorLuxottica S.A.

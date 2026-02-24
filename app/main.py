@@ -70,11 +70,13 @@ async def main():
         metadata, df = result
         wkn = metadata.get("wkn")
         name = metadata.get("name")
+        trading_venue = metadata.get("trading_venue")
+        currency = metadata.get("currency")
         interval = metadata.get("interval")
         api_start = metadata.get("start")
         api_end = metadata.get("end")
         print(
-            f"Analysing history of {wkn} ({name}), last {HISTORY_DAYS} days, interval: {interval}"
+            f"Analysing history of {wkn} ({name}), last {HISTORY_DAYS} days, interval: {interval}, trading venue: {trading_venue}, currency: {currency}"
         )
         print(f"API returned data from {api_start} to {api_end} ({len(df)} data points)")
 
