@@ -114,8 +114,8 @@ def detect_trend_break(
     # STRONG_SELL conditions
     if drawdown_pct < -severe_threshold:
         action = "STRONG_SELL"
-        reason = f"Critical drawdown of {drawdown_pct:.1f}% from recent high (€{recent_high:.2f}). Price crashed from €{recent_high:.2f} to €{current_price:.2f}."
         confidence = "HIGH"
+        reason = f"Critical drawdown of {drawdown_pct:.1f}% from recent high (€{recent_high:.2f}). Price crashed from €{recent_high:.2f} to €{current_price:.2f}. [Confidence: {confidence}]"
 
     elif (
         drawdown_pct < -min_threshold
@@ -127,7 +127,7 @@ def detect_trend_break(
         if adx_value > 40 and (minus_di_value - plus_di_value) > 15:
             action = "STRONG_SELL"
             confidence = "HIGH"
-            reason = f"Strong downtrend confirmed: {drawdown_pct:.1f}% drawdown, ADX={adx_value:.1f} (very strong), Supertrend bearish, strong negative momentum (MinusDI={minus_di_value:.1f} > PlusDI={plus_di_value:.1f})."
+            reason = f"Strong downtrend confirmed: {drawdown_pct:.1f}% drawdown, ADX={adx_value:.1f} (very strong), Supertrend bearish, strong negative momentum (MinusDI={minus_di_value:.1f} > PlusDI={plus_di_value:.1f}). [Confidence: {confidence}]"
         else:
             # Regular SELL
             action = "SELL"
@@ -137,6 +137,9 @@ def detect_trend_break(
         # Add EMA confirmation if available
         if config["use_ema_confirmation"] and ema_signal == "bearish":
             reason += f" EMA crossover confirms bearish trend (EMA{config['ema_fast_period']}={ema_fast_value:.2f} < EMA{config['ema_slow_period']}={ema_slow_value:.2f})."
+
+        # Add confidence to reason
+        reason += f" [Confidence: {confidence}]"
 
     # BUY conditions
     elif (
@@ -152,18 +155,19 @@ def detect_trend_break(
         if config["use_ema_confirmation"] and ema_signal == "bullish":
             reason += " EMA crossover confirms bullish trend."
 
+        reason += f" [Confidence: {confidence}]"
+
     # HOLD conditions (default)
     else:
         action = "HOLD"
+        confidence = "LOW"
         # Determine reason for holding
         if abs(drawdown_pct) < min_threshold and abs(rally_pct) < min_threshold:
-            reason = f"No significant price movement. Drawdown: {drawdown_pct:.1f}%, Rally: {rally_pct:.1f}% (threshold: {min_threshold:.0f}%)."
+            reason = f"No significant price movement. Drawdown: {drawdown_pct:.1f}%, Rally: {rally_pct:.1f}% (threshold: {min_threshold:.0f}%). [Confidence: {confidence}]"
         elif adx_value < config["min_adx_strength"]:
-            reason = f"Weak trend (ADX={adx_value:.1f} < {config['min_adx_strength']}). Market is ranging/choppy. Wait for clearer direction."
-            confidence = "LOW"
+            reason = f"Weak trend (ADX={adx_value:.1f} < {config['min_adx_strength']}). Market is ranging/choppy. Wait for clearer direction. [Confidence: {confidence}]"
         else:
-            reason = f"Mixed signals. Supertrend={'bullish' if supertrend_signal == 1 else 'bearish'}, but price movement insufficient for high-confidence signal."
-            confidence = "LOW"
+            reason = f"Mixed signals. Supertrend={'bullish' if supertrend_signal == 1 else 'bearish'}, but price movement insufficient for high-confidence signal. [Confidence: {confidence}]"
 
     # Compile all metrics
     metrics = {
