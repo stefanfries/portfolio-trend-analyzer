@@ -3,6 +3,7 @@
 ## TL;DR
 
 - ✅ Signals only persist after 22:00 (market close)
+- ✅ Weekend runs use Friday's date (no duplicates)
 - ✅ Warrants: Execute after 2 consecutive days
 - ✅ Stocks: Execute after 3 consecutive days  
 - ✅ STRONG_SELL: Execute after 1 day
@@ -43,6 +44,18 @@ uv run python -m app.main --force-save
 
 ```text
 🕒 Running after market close (22:00) - signals will be persisted
+```
+
+### Weekend Run
+
+```text
+🕒 Running after market close on weekend
+   Signals will use Friday's trading day to avoid duplicates
+```
+
+If Friday's signal already exists:
+```text
+📋 Execution: ⚠️ Weekend run - signal already exists for last trading day (Friday). Not persisted.
 ```
 
 ### Execution Recommendations

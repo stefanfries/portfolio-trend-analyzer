@@ -235,6 +235,78 @@ def test_force_save_flag():
         assert history_file.exists()
 
 
+def test_weekend_duplicate_prevention():
+    """Test that signals are not duplicated when run on weekends."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        history_file = Path(tmpdir) / "test_history.json"
+        manager = SignalHistoryManager(history_file=history_file)
+
+        # Friday 22:30: First signal
+        friday = datetime(2026, 2, 27, 22, 30, 0)  # Friday
+        rec_friday = manager.add_signal(
+            wkn="TEST123",
+            action="BUY",
+            confidence="HIGH",
+            instrument_type="warrant",
+            force_save=False,
+            current_time=friday,
+        )
+        assert rec_friday["will_persist"] is True
+        assert len(manager.history["TEST123"]["signals"]) == 1
+        assert manager.history["TEST123"]["signals"][0]["date"] == "2026-02-27"
+
+        # Saturday 22:30: Should not add duplicate signal
+        saturday = datetime(2026, 2, 28, 22, 30, 0)  # Saturday
+        rec_saturday = manager.add_signal(
+            wkn="TEST123",
+            action="BUY",
+            confidence="HIGH",
+            instrument_type="warrant",
+            force_save=False,
+            current_time=saturday,
+        )
+        # Should not persist (duplicate for Friday)
+        assert rec_saturday["will_persist"] is False
+        # Should still only have 1 signal (from Friday)
+        assert len(manager.history["TEST123"]["signals"]) == 1
+        assert "Weekend run" in rec_saturday["reason"]
+
+        # Sunday 22:30: Should also not add duplicate
+        sunday = datetime(2026, 3, 1, 22, 30, 0)  # Sunday
+        rec_sunday = manager.add_signal(
+            wkn="TEST123",
+            action="BUY",
+            confidence="HIGH",
+            instrument_type="warrant",
+            force_save=False,
+            current_time=sunday,
+        )
+        assert rec_sunday["will_persist"] is False
+        assert len(manager.history["TEST123"]["signals"]) == 1
+
+
+def test_weekend_uses_friday_date():
+    """Test that weekend signals use Friday's date for trading day."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        history_file = Path(tmpdir) / "test_history.json"
+        manager = SignalHistoryManager(history_file=history_file)
+
+        # Saturday - should map to Friday's date
+        saturday = datetime(2026, 2, 28, 22, 30, 0)  # Saturday
+        trading_day = manager._get_current_trading_day(saturday)
+        assert trading_day == "2026-02-27"  # Friday
+
+        # Sunday - should also map to Friday's date
+        sunday = datetime(2026, 3, 1, 22, 30, 0)  # Sunday
+        trading_day = manager._get_current_trading_day(sunday)
+        assert trading_day == "2026-02-27"  # Friday
+
+        # Monday - should use Monday's date
+        monday = datetime(2026, 3, 2, 22, 30, 0)  # Monday
+        trading_day = manager._get_current_trading_day(monday)
+        assert trading_day == "2026-03-02"  # Monday
+
+
 if __name__ == "__main__":
     # Run tests manually
     test_signal_tracking_before_market_close()
@@ -257,5 +329,11 @@ if __name__ == "__main__":
 
     test_force_save_flag()
     print("✅ Test 7 passed: Force save flag works")
+
+    test_weekend_duplicate_prevention()
+    print("✅ Test 8 passed: Weekend duplicate prevention works")
+
+    test_weekend_uses_friday_date()
+    print("✅ Test 9 passed: Weekend uses Friday trading day")
 
     print("\n🎉 All tests passed!")

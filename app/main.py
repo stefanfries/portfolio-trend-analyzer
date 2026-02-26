@@ -40,8 +40,12 @@ async def main(force_save: bool = False):
     signal_manager = SignalHistoryManager()
     current_time = datetime.now()
     is_official_run = signal_manager.is_after_market_close(current_time)
+    is_weekend = current_time.weekday() >= 5  # 5=Saturday, 6=Sunday
 
-    if is_official_run:
+    if is_official_run and is_weekend:
+        print("\n🕒 Running after market close on weekend")
+        print("   Signals will use Friday's trading day to avoid duplicates")
+    elif is_official_run:
         print("\n🕒 Running after market close (22:00) - signals will be persisted")
     elif force_save:
         print("\n⚠️ Force-save enabled - signals will be persisted despite market hours")

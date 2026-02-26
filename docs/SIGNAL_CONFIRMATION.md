@@ -82,6 +82,28 @@ uv run python -m app.main
 - Perfect for development and testing
 - Output shows: ⚙️ Test run (before market close) - signals will NOT be persisted
 
+### Weekend Runs
+
+If you run the job on weekends (Saturday/Sunday) after 22:00:
+
+```bash
+# Run on Saturday at 22:30
+uv run python -m app.main
+```
+
+**Smart duplicate prevention:**
+- Uses **Friday's date** as the trading day
+- **Won't persist** if Friday's signal already exists
+- Prevents duplicate signals for the same trading day
+- Shows: ⚠️ Weekend run - signal already exists for last trading day (Friday)
+
+**Example:**
+- Friday 22:30 → BUY signal saved with date "2026-02-27"
+- Saturday 22:30 → Same BUY signal detected, but **not saved** (duplicate)
+- Monday 22:30 → New signal saved with date "2026-03-02"
+
+This ensures consecutive day counting is accurate and only counts actual trading days.
+
 ## Signal History File
 
 Location: `results/signal_history.json`

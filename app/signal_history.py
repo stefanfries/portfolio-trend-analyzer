@@ -8,7 +8,7 @@ the historical data with test runs during market hours.
 """
 
 import json
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from pathlib import Path
 from typing import Literal
 
@@ -72,6 +72,36 @@ class SignalHistoryManager:
             if temp_file.exists():
                 temp_file.unlink()
 
+    def _get_current_trading_day(self, current_time: datetime | None = None) -> str:
+        """Get the current trading day date (adjusts weekends to Friday).
+
+        If current time is on a weekend, returns the previous Friday's date.
+        This ensures we don't create duplicate signals on weekends.
+
+        Args:
+            current_time: Time to check (default: now)
+
+        Returns:
+            Date string in YYYY-MM-DD format for the current trading day
+        """
+        if current_time is None:
+            current_time = datetime.now()
+
+        # 0=Monday, 1=Tuesday, ..., 5=Saturday, 6=Sunday
+        weekday = current_time.weekday()
+
+        # If Saturday (5), go back 1 day to Friday
+        if weekday == 5:
+            trading_day = current_time - timedelta(days=1)
+        # If Sunday (6), go back 2 days to Friday
+        elif weekday == 6:
+            trading_day = current_time - timedelta(days=2)
+        else:
+            # Weekday - use current date
+            trading_day = current_time
+
+        return trading_day.strftime("%Y-%m-%d")
+
     def is_after_market_close(self, current_time: datetime | None = None) -> bool:
         """Check if current time is after market close.
 
@@ -116,7 +146,8 @@ class SignalHistoryManager:
         if current_time is None:
             current_time = datetime.now()
 
-        date_str = current_time.strftime("%Y-%m-%d")
+        # Get the trading day (adjusts weekends to Friday)
+        trading_day_str = self._get_current_trading_day(current_time)
 
         # Initialize WKN entry if not exists
         if wkn not in self.history:
@@ -131,18 +162,23 @@ class SignalHistoryManager:
         # Update instrument type (may change if user reclassifies)
         wkn_history["instrument_type"] = instrument_type
 
-        # Check if we already have a signal for today
+        # Check if we already have a signal for this trading day
         signals = wkn_history["signals"]
-        today_signal_exists = any(s["date"] == date_str for s in signals)
+        trading_day_signal_exists = any(s["date"] == trading_day_str for s in signals)
 
         # Determine if we should persist this signal
         will_persist = force_save or self.is_after_market_close(current_time)
 
-        # Only add signal if after market close (or forced) and not already added today
-        if will_persist and not today_signal_exists:
+        # Check if running on weekend
+        is_weekend = current_time.weekday() >= 5  # 5=Saturday, 6=Sunday
+
+        # Only add signal if:
+        # - After market close (or forced)
+        # - No signal exists yet for this trading day
+        if will_persist and not trading_day_signal_exists:
             signals.append(
                 {
-                    "date": date_str,
+                    "date": trading_day_str,
                     "action": action,
                     "confidence": confidence,
                 }
@@ -150,7 +186,10 @@ class SignalHistoryManager:
 
             # Keep only last N days (from settings)
             if len(signals) > self.retention_days:
-                signals[:] = signals[-self.retention_days:]
+                signals[:] = signals[-self.retention_days :]
+        elif will_persist and trading_day_signal_exists and is_weekend:
+            # Weekend run with existing Friday signal - don't persist
+            will_persist = False
 
         # Determine required consecutive days
         required_days = self._get_required_days(action, instrument_type)
@@ -176,7 +215,7 @@ class SignalHistoryManager:
             "required_days": required_days,
             "will_persist": will_persist,
             "reason": self._build_reason(
-                action, consecutive_days, required_days, should_execute, will_persist
+                action, consecutive_days, required_days, should_execute, will_persist, current_time
             ),
         }
 
@@ -237,6 +276,7 @@ class SignalHistoryManager:
         required_days: int,
         should_execute: bool,
         will_persist: bool,
+        current_time: datetime,
     ) -> str:
         """Build human-readable reason for execution decision.
 
@@ -246,11 +286,16 @@ class SignalHistoryManager:
             required_days: Required consecutive days
             should_execute: Whether to execute now
             will_persist: Whether signal will be persisted
+            current_time: Current time for weekend detection
 
         Returns:
             Explanation string
         """
         if not will_persist:
+            # Check if it's because of weekend duplicate or test run
+            is_weekend = current_time.weekday() >= 5
+            if is_weekend and current_time.time() >= self.market_close_time:
+                return "⚠️ Weekend run - signal already exists for last trading day (Friday). Not persisted."
             return f"⚠️ Test run (before market close) - signal not persisted. Would need {required_days} consecutive days."
 
         if action == "HOLD":
