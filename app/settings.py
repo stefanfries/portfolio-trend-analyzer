@@ -30,3 +30,18 @@ class APISettings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",  # Ignore extra fields
     )
+
+
+class SignalHistorySettings(BaseSettings):
+    """Settings for signal history tracking and confirmation."""
+
+    signal_history_retention_days: int = 30
+    signal_history_market_close_hour: int = 22
+    signal_history_market_close_minute: int = 0
+
+    model_config = SettingsConfigDict(
+        env_prefix="SIGNAL_HISTORY_",  # Prefix for environment variables
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",  # Ignore extra fields
+    )

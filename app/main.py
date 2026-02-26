@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 import sys
 from datetime import datetime, timedelta
@@ -24,15 +25,29 @@ from app.depots import (
 from app.notifier import send_mail  # noqa: F401
 from app.reader import datareader
 from app.results_saver import save_results_to_xlsx
+from app.signal_history import SignalHistoryManager
 from app.visualizer import plot_candlestick
 
 
-async def main():
+async def main(force_save: bool = False):
     # Configuration
     HISTORY_DAYS = 14
     TIMEFRAME = "hourly"  # Options: "hourly" or "daily"
     INSTRUMENT_TYPE = "warrant"  # Options: "stock" or "warrant"
     INTERVAL_MAP = {"hourly": "hour", "daily": "day"}
+
+    # Initialize signal history manager
+    signal_manager = SignalHistoryManager()
+    current_time = datetime.now()
+    is_official_run = signal_manager.is_after_market_close(current_time)
+
+    if is_official_run:
+        print("\n🕒 Running after market close (22:00) - signals will be persisted")
+    elif force_save:
+        print("\n⚠️ Force-save enabled - signals will be persisted despite market hours")
+    else:
+        print("\n⚙️ Test run (before market close) - signals will NOT be persisted")
+        print("   Use --force-save to persist signals during market hours\n")
 
     # depot = test_depot
     # depot = tsi_6i_aktien
@@ -97,6 +112,19 @@ async def main():
 
         plot_candlestick(df, wkn, name, timeframe=TIMEFRAME)  # type: ignore
 
+        # Track signal and get execution recommendation
+        execution_rec = signal_manager.add_signal(
+            wkn=wkn,
+            action=trend_signal["action"],
+            confidence=trend_signal["confidence"],
+            instrument_type=INSTRUMENT_TYPE,
+            force_save=force_save,
+            current_time=current_time,
+        )
+
+        # Show execution recommendation
+        print(f"📋 Execution: {execution_rec['reason']}")
+
         # Collect results for email report
         supertrend_direction = (
             "UP" if trend_signal["metrics"]["supertrend_direction"] == 1 else "DOWN"
@@ -111,6 +139,9 @@ async def main():
                 "Drawdown %": f"{trend_signal['metrics']['drawdown_pct']:.2f}",
                 "Current Price": f"{df['close'].iloc[-1]:.2f} €",
                 "Reason": trend_signal["reason"],
+                "Execution Status": "✅ EXECUTE NOW"
+                if execution_rec["should_execute"]
+                else f"⏳ {execution_rec['consecutive_days']}/{execution_rec['required_days']} days",
             }
         )
         print(f"{'-' * 80}\n")
@@ -120,6 +151,31 @@ async def main():
         f"✅ Analysis complete! Processed {len(results)} out of {total_securities} securities successfully."
     )
     print(f"{'=' * 80}\n")
+
+    # Show execution summary
+    execution_summary = signal_manager.get_execution_summary()
+    ready_to_execute = [s for s in execution_summary if s["should_execute"]]
+
+    if ready_to_execute and (is_official_run or force_save):
+        print(f"\n{'=' * 80}")
+        print(f"🎯 READY TO EXECUTE ({len(ready_to_execute)} securities):")
+        print(f"{'=' * 80}")
+        for item in ready_to_execute:
+            print(
+                f"  • {item['wkn']}: {item['action']} ({item['consecutive_days']} consecutive days)"
+            )
+        print(f"{'=' * 80}\n")
+    elif execution_summary:
+        print(f"\n{'=' * 80}")
+        print("📊 SIGNAL TRACKING STATUS:")
+        print(f"{'=' * 80}")
+        for item in execution_summary:
+            status = "✅ READY" if item["should_execute"] else "⏳ WAITING"
+            print(
+                f"  {status} {item['wkn']}: {item['action']} "
+                f"({item['consecutive_days']}/{item['required_days']} days)"
+            )
+        print(f"{'=' * 80}\n")
 
     # Save results for historical comparison (Excel format with proper formatting)
     if results:
@@ -156,4 +212,14 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    parser = argparse.ArgumentParser(
+        description="Portfolio Trend Analyzer with signal confirmation tracking"
+    )
+    parser.add_argument(
+        "--force-save",
+        action="store_true",
+        help="Force save signals to history even before market close (22:00)",
+    )
+    args = parser.parse_args()
+
+    asyncio.run(main(force_save=args.force_save))

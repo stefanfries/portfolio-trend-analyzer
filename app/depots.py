@@ -5,9 +5,9 @@ test_depot = [
 mega_trend_folger = [
     "MM3GS6",  # Alphabet Inc.
     "HS4P7G",  # Amazon.com Inc.
-    "JT2GHE",  # Meta Platforms Inc.
+    "MG7CDW",  # Meta Platforms Inc.
     "SY026G",  # Apple Inc.
-    "HS765P",  # Starbucks Corporation
+    "SJ7CD0",  # Starbucks Corporation
     "MK74CT",  # GE Aerospace & Defense
     "MM2DRR",  # EssilorLuxottica S.A.
     "MG9VYR",  # Cisco Systems Inc.
@@ -19,6 +19,7 @@ mega_trend_folger = [
     "MJ5417",  # Regeneron Pharmaceuticals Inc.
     "MM5HUZ",  # KLA Corp.
     "SJ7J0G",  # NextEra Energy Inc.
+    "MK368K",  # Intuitive Surgical Inc.
 ]
 
 mtf_underlyings = [

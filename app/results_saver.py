@@ -71,6 +71,7 @@ def save_results_to_xlsx(results: list[dict], depot_name: str = "mega_trend_folg
         "ADX",
         "Supertrend",
         "Trend Signal",
+        "Execution Status",
         "Reason",
     ]
     # Add any other columns that might exist
