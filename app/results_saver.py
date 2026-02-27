@@ -8,6 +8,14 @@ from pathlib import Path
 import pandas as pd
 from openpyxl.styles import PatternFill
 
+from app.settings import ResultsSaverSettings
+
+# Excel formatting constants
+EXECUTE_MARKER = "✅ EXECUTE NOW"
+WAITING_MARKER = "⏳"
+COLOR_EXECUTE_GREEN = "C6EFCE"  # Light green for execute now
+COLOR_WAITING_YELLOW = "FFEB9C"  # Light yellow for pending
+
 
 def save_results_to_xlsx(results: list[dict], depot_name: str = "mega_trend_folger"):
     """
@@ -20,16 +28,18 @@ def save_results_to_xlsx(results: list[dict], depot_name: str = "mega_trend_folg
     Returns:
         Path to the saved file
     """
+    settings = ResultsSaverSettings()
+    
     if not results:
         print("⚠️ No results to save.")
         return
 
     # Create results directory if it doesn't exist
-    results_dir = Path("results")
+    results_dir = Path(settings.results_dir)
     results_dir.mkdir(exist_ok=True)
 
     # Generate filename with timestamp
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    timestamp = datetime.now().strftime(settings.results_timestamp_format)
     filename = results_dir / f"{depot_name}_{timestamp}.xlsx"
 
     # Process results to extract numeric values
@@ -85,10 +95,10 @@ def save_results_to_xlsx(results: list[dict], depot_name: str = "mega_trend_folg
 
     # Write to Excel with formatting
     with pd.ExcelWriter(filename, engine="openpyxl") as writer:
-        df.to_excel(writer, sheet_name="Analysis", index=False)
+        df.to_excel(writer, sheet_name=settings.excel_sheet_name, index=False)
 
         # Get the worksheet
-        worksheet = writer.sheets["Analysis"]
+        worksheet = writer.sheets[settings.excel_sheet_name]
 
         # Format columns
         for idx, col in enumerate(df.columns, start=1):
@@ -122,7 +132,7 @@ def save_results_to_xlsx(results: list[dict], depot_name: str = "mega_trend_folg
                         max_length = max(max_length, len(str(cell.value)))
                 except Exception:
                     pass
-            adjusted_width = min(max_length + 2, 50)  # Cap at 50
+            adjusted_width = min(max_length + 2, settings.excel_max_column_width)
             worksheet.column_dimensions[column_letter].width = adjusted_width
 
         # Enable auto-filter on header row
@@ -133,17 +143,21 @@ def save_results_to_xlsx(results: list[dict], depot_name: str = "mega_trend_folg
             exec_col_idx = df.columns.get_loc("Execution Recommendation") + 1
             exec_col_letter = chr(64 + exec_col_idx)
 
-            # Define colors
-            green_fill = PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="solid")  # Light green
-            yellow_fill = PatternFill(start_color="FFEB9C", end_color="FFEB9C", fill_type="solid")  # Light yellow
+            # Define colors using constants
+            green_fill = PatternFill(
+                start_color=COLOR_EXECUTE_GREEN, end_color=COLOR_EXECUTE_GREEN, fill_type="solid"
+            )
+            yellow_fill = PatternFill(
+                start_color=COLOR_WAITING_YELLOW, end_color=COLOR_WAITING_YELLOW, fill_type="solid"
+            )
 
             for row in range(2, len(df) + 2):  # Start from row 2 (after header)
                 cell_value = worksheet[f"{exec_col_letter}{row}"].value
-                if cell_value and "✅ EXECUTE NOW" in str(cell_value):
+                if cell_value and EXECUTE_MARKER in str(cell_value):
                     # Green for execute now
                     for col_idx in range(1, len(df.columns) + 1):
                         worksheet[f"{chr(64 + col_idx)}{row}"].fill = green_fill
-                elif cell_value and "⏳" in str(cell_value):
+                elif cell_value and WAITING_MARKER in str(cell_value):
                     # Yellow for waiting/pending
                     for col_idx in range(1, len(df.columns) + 1):
                         worksheet[f"{chr(64 + col_idx)}{row}"].fill = yellow_fill
@@ -167,16 +181,18 @@ def save_results_to_csv(results: list[dict], depot_name: str = "mega_trend_folge
         results: List of result dictionaries from the main analysis
         depot_name: Name of the depot being analyzed
     """
+    settings = ResultsSaverSettings()
+    
     if not results:
         print("⚠️ No results to save.")
         return
 
     # Create results directory if it doesn't exist
-    results_dir = Path("results")
+    results_dir = Path(settings.results_dir)
     results_dir.mkdir(exist_ok=True)
 
     # Generate filename with timestamp
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    timestamp = datetime.now().strftime(settings.results_timestamp_format)
     filename = results_dir / f"{depot_name}_{timestamp}.csv"
 
     # Get all possible keys from results
@@ -229,7 +245,8 @@ def list_available_results(depot_name: str = None) -> list[Path]:
     Returns:
         List of Path objects for result files
     """
-    results_dir = Path("results")
+    settings = ResultsSaverSettings()
+    results_dir = Path(settings.results_dir)
     if not results_dir.exists():
         return []
 

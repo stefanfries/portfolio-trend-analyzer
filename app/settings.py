@@ -45,3 +45,19 @@ class SignalHistorySettings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",  # Ignore extra fields
     )
+
+
+class ResultsSaverSettings(BaseSettings):
+    """Settings for results saving and Excel formatting."""
+
+    results_dir: str = "results"
+    results_timestamp_format: str = "%Y-%m-%d_%H-%M-%S"
+    excel_sheet_name: str = "Analysis"
+    excel_max_column_width: int = 50
+
+    model_config = SettingsConfigDict(
+        env_prefix="RESULTS_",  # Prefix for environment variables
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",  # Ignore extra fields
+    )
