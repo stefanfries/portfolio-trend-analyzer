@@ -6,6 +6,7 @@ from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
+from openpyxl.styles import PatternFill
 
 
 def save_results_to_xlsx(results: list[dict], depot_name: str = "mega_trend_folger"):
@@ -123,6 +124,29 @@ def save_results_to_xlsx(results: list[dict], depot_name: str = "mega_trend_folg
                     pass
             adjusted_width = min(max_length + 2, 50)  # Cap at 50
             worksheet.column_dimensions[column_letter].width = adjusted_width
+
+        # Enable auto-filter on header row
+        worksheet.auto_filter.ref = worksheet.dimensions
+
+        # Apply background colors based on Execution Recommendation
+        if "Execution Recommendation" in df.columns:
+            exec_col_idx = df.columns.get_loc("Execution Recommendation") + 1
+            exec_col_letter = chr(64 + exec_col_idx)
+
+            # Define colors
+            green_fill = PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="solid")  # Light green
+            yellow_fill = PatternFill(start_color="FFEB9C", end_color="FFEB9C", fill_type="solid")  # Light yellow
+
+            for row in range(2, len(df) + 2):  # Start from row 2 (after header)
+                cell_value = worksheet[f"{exec_col_letter}{row}"].value
+                if cell_value and "✅ EXECUTE NOW" in str(cell_value):
+                    # Green for execute now
+                    for col_idx in range(1, len(df.columns) + 1):
+                        worksheet[f"{chr(64 + col_idx)}{row}"].fill = green_fill
+                elif cell_value and "⏳" in str(cell_value):
+                    # Yellow for waiting/pending
+                    for col_idx in range(1, len(df.columns) + 1):
+                        worksheet[f"{chr(64 + col_idx)}{row}"].fill = yellow_fill
 
         # Freeze header row
         worksheet.freeze_panes = "A2"
