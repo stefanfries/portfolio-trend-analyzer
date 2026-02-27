@@ -143,7 +143,7 @@ async def main(force_save: bool = False):
                 "Drawdown %": f"{trend_signal['metrics']['drawdown_pct']:.2f}",
                 "Current Price": f"{df['close'].iloc[-1]:.2f} €",
                 "Reason": trend_signal["reason"],
-                "Execution Status": "✅ EXECUTE NOW"
+                "Execution Recommendation": "✅ EXECUTE NOW"
                 if execution_rec["should_execute"]
                 else f"⏳ {execution_rec['consecutive_days']}/{execution_rec['required_days']} days",
             }

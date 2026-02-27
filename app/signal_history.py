@@ -311,7 +311,7 @@ class SignalHistoryManager:
         """Get summary of all securities ready for execution.
 
         Returns:
-            List of securities with their execution status
+            List of securities with their execution recommendation
         """
         summary = []
 
