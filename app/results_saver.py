@@ -13,8 +13,13 @@ from app.settings import ResultsSaverSettings
 # Excel formatting constants
 EXECUTE_MARKER = "✅ EXECUTE NOW"
 WAITING_MARKER = "⏳"
-COLOR_EXECUTE_GREEN = "C6EFCE"  # Light green for execute now
-COLOR_WAITING_YELLOW = "FFEB9C"  # Light yellow for pending
+
+# Color scheme for different signal types and execution statuses
+COLOR_HOLD_GREY = "F0F0F0"  # Light grey for HOLD recommendations
+COLOR_BUY_WAIT_LIGHT_GREEN = "A0FFA0"  # Light green for BUY waiting
+COLOR_BUY_EXECUTE_GREEN = "00FF00"  # Intense green for BUY execute now
+COLOR_SELL_WAIT_LIGHT_RED = "FFA0A0"  # Light red for SELL/STRONG_SELL waiting
+COLOR_SELL_EXECUTE_RED = "FF0000"  # Intense red for SELL/STRONG_SELL execute now
 
 
 def save_results_to_xlsx(results: list[dict], depot_name: str = "mega_trend_folger"):
@@ -29,7 +34,7 @@ def save_results_to_xlsx(results: list[dict], depot_name: str = "mega_trend_folg
         Path to the saved file
     """
     settings = ResultsSaverSettings()
-    
+
     if not results:
         print("⚠️ No results to save.")
         return
@@ -138,29 +143,61 @@ def save_results_to_xlsx(results: list[dict], depot_name: str = "mega_trend_folg
         # Enable auto-filter on header row
         worksheet.auto_filter.ref = worksheet.dimensions
 
-        # Apply background colors based on Execution Recommendation
-        if "Execution Recommendation" in df.columns:
+        # Apply background colors based on Trend Signal and Execution Recommendation
+        if "Trend Signal" in df.columns and "Execution Recommendation" in df.columns:
+            signal_col_idx = df.columns.get_loc("Trend Signal") + 1
+            signal_col_letter = chr(64 + signal_col_idx)
             exec_col_idx = df.columns.get_loc("Execution Recommendation") + 1
             exec_col_letter = chr(64 + exec_col_idx)
 
-            # Define colors using constants
-            green_fill = PatternFill(
-                start_color=COLOR_EXECUTE_GREEN, end_color=COLOR_EXECUTE_GREEN, fill_type="solid"
+            # Define color fills using constants
+            hold_fill = PatternFill(
+                start_color=COLOR_HOLD_GREY, end_color=COLOR_HOLD_GREY, fill_type="solid"
             )
-            yellow_fill = PatternFill(
-                start_color=COLOR_WAITING_YELLOW, end_color=COLOR_WAITING_YELLOW, fill_type="solid"
+            buy_wait_fill = PatternFill(
+                start_color=COLOR_BUY_WAIT_LIGHT_GREEN,
+                end_color=COLOR_BUY_WAIT_LIGHT_GREEN,
+                fill_type="solid",
+            )
+            buy_execute_fill = PatternFill(
+                start_color=COLOR_BUY_EXECUTE_GREEN,
+                end_color=COLOR_BUY_EXECUTE_GREEN,
+                fill_type="solid",
+            )
+            sell_wait_fill = PatternFill(
+                start_color=COLOR_SELL_WAIT_LIGHT_RED,
+                end_color=COLOR_SELL_WAIT_LIGHT_RED,
+                fill_type="solid",
+            )
+            sell_execute_fill = PatternFill(
+                start_color=COLOR_SELL_EXECUTE_RED,
+                end_color=COLOR_SELL_EXECUTE_RED,
+                fill_type="solid",
             )
 
             for row in range(2, len(df) + 2):  # Start from row 2 (after header)
-                cell_value = worksheet[f"{exec_col_letter}{row}"].value
-                if cell_value and EXECUTE_MARKER in str(cell_value):
-                    # Green for execute now
+                signal_value = str(worksheet[f"{signal_col_letter}{row}"].value)
+                exec_value = str(worksheet[f"{exec_col_letter}{row}"].value)
+
+                # Determine the appropriate color based on signal type and execution status
+                fill = None
+                if "HOLD" in signal_value:
+                    fill = hold_fill
+                elif "BUY" in signal_value:
+                    if EXECUTE_MARKER in exec_value:
+                        fill = buy_execute_fill
+                    else:
+                        fill = buy_wait_fill
+                elif "SELL" in signal_value:  # Catches both SELL and STRONG_SELL
+                    if EXECUTE_MARKER in exec_value:
+                        fill = sell_execute_fill
+                    else:
+                        fill = sell_wait_fill
+
+                # Apply the fill to all columns in this row
+                if fill:
                     for col_idx in range(1, len(df.columns) + 1):
-                        worksheet[f"{chr(64 + col_idx)}{row}"].fill = green_fill
-                elif cell_value and WAITING_MARKER in str(cell_value):
-                    # Yellow for waiting/pending
-                    for col_idx in range(1, len(df.columns) + 1):
-                        worksheet[f"{chr(64 + col_idx)}{row}"].fill = yellow_fill
+                        worksheet[f"{chr(64 + col_idx)}{row}"].fill = fill
 
         # Freeze header row
         worksheet.freeze_panes = "A2"
@@ -182,7 +219,7 @@ def save_results_to_csv(results: list[dict], depot_name: str = "mega_trend_folge
         depot_name: Name of the depot being analyzed
     """
     settings = ResultsSaverSettings()
-    
+
     if not results:
         print("⚠️ No results to save.")
         return
