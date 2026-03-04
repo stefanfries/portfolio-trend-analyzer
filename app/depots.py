@@ -4,7 +4,7 @@ test_depot = [
 
 mega_trend_folger = [
     "MM3GS6",  # Alphabet Inc.
-    "HS4P7G",  # Amazon.com Inc.
+    "MG2FJW",  # Amazon.com Inc.
     "MG7CDW",  # Meta Platforms Inc.
     "SY026G",  # Apple Inc.
     "SJ7CD0",  # Starbucks Corporation
