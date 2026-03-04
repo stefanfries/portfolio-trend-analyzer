@@ -133,6 +133,17 @@ async def main(force_save: bool = False):
         supertrend_direction = (
             "UP" if trend_signal["metrics"]["supertrend_direction"] == 1 else "DOWN"
         )
+
+        # Determine execution recommendation text
+        if execution_rec["should_execute"]:
+            exec_recommendation = "✅ EXECUTE NOW"
+        elif trend_signal["action"] == "HOLD":
+            exec_recommendation = "No action"
+        else:
+            exec_recommendation = (
+                f"⏳ {execution_rec['consecutive_days']}/{execution_rec['required_days']} days"
+            )
+
         results.append(
             {
                 "WKN": wkn,
@@ -143,9 +154,7 @@ async def main(force_save: bool = False):
                 "Drawdown %": f"{trend_signal['metrics']['drawdown_pct']:.2f}",
                 "Current Price": f"{df['close'].iloc[-1]:.2f} €",
                 "Reason": trend_signal["reason"],
-                "Execution Recommendation": "✅ EXECUTE NOW"
-                if execution_rec["should_execute"]
-                else f"⏳ {execution_rec['consecutive_days']}/{execution_rec['required_days']} days",
+                "Execution Recommendation": exec_recommendation,
             }
         )
         print(f"{'-' * 80}\n")
