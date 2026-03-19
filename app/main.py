@@ -166,7 +166,7 @@ async def main(force_save: bool = False):
     print(f"{'=' * 80}\n")
 
     # Show execution summary
-    execution_summary = signal_manager.get_execution_summary()
+    execution_summary = signal_manager.get_execution_summary(depot=depot)
     ready_to_execute = [s for s in execution_summary if s["should_execute"]]
 
     if ready_to_execute and (is_official_run or force_save):

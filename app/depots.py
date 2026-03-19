@@ -20,6 +20,7 @@ mega_trend_folger = [
     "MM5HUZ",  # KLA Corp.
     "SJ7J0G",  # NextEra Energy Inc.
     "MK368K",  # Intuitive Surgical Inc.
+    "SJ704W",  # Microsoft Corporation
 ]
 
 mtf_underlyings = [

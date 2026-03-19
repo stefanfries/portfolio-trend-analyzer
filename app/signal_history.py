@@ -307,8 +307,12 @@ class SignalHistoryManager:
         remaining = required_days - consecutive_days
         return f"⏳ Wait: {consecutive_days}/{required_days} consecutive {action} signals ({remaining} more day{'s' if remaining > 1 else ''} needed)"
 
-    def get_execution_summary(self) -> list[dict]:
+    def get_execution_summary(self, depot: list[str] | None = None) -> list[dict]:
         """Get summary of all securities ready for execution.
+
+        Args:
+            depot: Optional list of WKNs to filter by. If provided, only WKNs
+                   present in this list will be included in the summary.
 
         Returns:
             List of securities with their execution recommendation
@@ -316,6 +320,8 @@ class SignalHistoryManager:
         summary = []
 
         for wkn, data in self.history.items():
+            if depot is not None and wkn not in depot:
+                continue
             if not data["signals"]:
                 continue
 
