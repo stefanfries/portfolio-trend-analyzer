@@ -14,9 +14,8 @@ if sys.platform == "win32":
 from app.depots import (
     depot_900_prozent,  # noqa: F401
     etf_depot,  # noqa: F401
-    mega_trend_folger,  # noqa: F401
+    megatrend_folger,  # noqa: F401
     mtf_underlyings,  # noqa: F401
-    my_mega_trend_folger,  # noqa: F401
     os_projekt_2025,  # noqa: F401
     test_depot,  # noqa: F401
     tsi_6i_aktien,  # noqa: F401
@@ -53,17 +52,14 @@ async def main(force_save: bool = False):
         print("\n⚙️ Test run (before market close) - signals will NOT be persisted")
         print("   Use --force-save to persist signals during market hours\n")
 
-    # depot = test_depot
-    # depot = tsi_6i_aktien
-    # depot = tsi_6i_faktor2
-    depot = mega_trend_folger
-    depot_name = "mega_trend_folger"
-    # depot = mtf_underlyings
-    # depot_name = "mtf_underlyings"
-    # depot = my_mega_trend_folger
-    # depot = depot_900_prozent
-    # depot = etf_depot
-    # depot = os_projekt_2025
+    # depot, depot_name = test_depot, "test_depot"
+    # depot, depot_name = tsi_6i_aktien, "tsi_6i_aktien"
+    # depot, depot_name = tsi_6i_faktor2, "tsi_6i_faktor2"
+    depot, depot_name = megatrend_folger, "megatrend_folger"
+    # depot, depot_name = mtf_underlyings, "mtf_underlyings"
+    # depot, depot_name = depot_900_prozent, "depot_900_prozent"
+    # depot, depot_name = etf_depot, "etf_depot"
+    # depot, depot_name = os_projekt_2025, "os_projekt_2025"
 
     results = []  # Collect all analysis results
 

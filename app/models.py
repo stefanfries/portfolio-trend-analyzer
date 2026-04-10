@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Literal
+from typing import Literal
 
 from pydantic import BaseModel
 from pydantic_extra_types.currency_code import Currency
@@ -25,4 +25,4 @@ class HistoryData(BaseModel):
     start: datetime
     end: datetime
     interval: Interval
-    data: List[HistoryRecord]
+    data: list[HistoryRecord]

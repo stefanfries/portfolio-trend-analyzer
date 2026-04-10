@@ -2,25 +2,26 @@ test_depot = [
     "865985",  # Apple Inc.
 ]
 
-mega_trend_folger = [
-    "MM3GS6",  # Alphabet Inc.
-    "MG2FJW",  # Amazon.com Inc.
-    "MG7CDW",  # Meta Platforms Inc.
-    "SY026G",  # Apple Inc.
-    "SJ7CD0",  # Starbucks Corporation
+megatrend_folger = [
+    "MM3GS6",  # Alphabet Inc.              schlecht
+    "MG2FJW",  # Amazon.com Inc.            gut
+    "MG7CDW",  # Meta Platforms Inc.        schlecht
+    "SY026G",  # Apple Inc.                 akzeptabel
+    "SJ7CD0",  # Starbucks Corporation      schlecht
     "MK74CT",  # GE Aerospace & Defense
     "MM2DRR",  # EssilorLuxottica S.A.
     "MG9VYR",  # Cisco Systems Inc.
-    "JK9V0Y",  # Nvidia Corporation
+    "MG7C2G",  # Nvidia Corporation
     "MM5J03",  # Newmont Corporation
-    "JH5VLN",  # Blackrock Inc.
+    "MM5G80",  # Blackrock Inc.
     "SJ7957",  # Allianz SE
     "MM0CVV",  # Applied Materials Inc.
     "MJ5417",  # Regeneron Pharmaceuticals Inc.
-    "MM5HUZ",  # KLA Corp.
+    "PK64FA",  # KLA Corp.
     "SJ7J0G",  # NextEra Energy Inc.
     "MK368K",  # Intuitive Surgical Inc.
     "SJ704W",  # Microsoft Corporation
+    "FE0ZZL",  # Micron Technology Inc.
 ]
 
 mtf_underlyings = [
@@ -37,22 +38,12 @@ mtf_underlyings = [
     "US09290D1019",  # Blackrock Inc.
     "DE0008404005",  # Allianz SE
     "US0382221051",  # Applied Materials Inc.
+    "US75886F1075",  # Regeneron Pharmaceuticals Inc.
     "US4824801009",  # KLA Corp.
     "US65339F1012",  # NextEra Energy Inc.
-]
-
-my_mega_trend_folger = [
-    # "MJ85T6",  # Netflix Inc.
-    "MG7C9A",  # Broadcom Inc.
-    "JK3KVQ",  # Nvidia Corporation
-    "MK210Y",  # Salesforce.com Inc.
-    "MJ1278",  # Cintas Corporation
-    "MK2EWJ",  # Munich Re AG
-    "MG7BYX",  # Costco Wholesale Corporation
-    "MG80MS",  # Mastercard Inc.
-    "JF4R3F",  # Alphabet Inc.
-    "HT2081",  # Fiserv
-    "HS2RHM",  # Procter&Gamble
+    "US46120E6023",  # Intuitive Surgical Inc.
+    "US5949181045",  # Microsoft Corporation
+    "US5951121038",  # Micron Technology Inc.
 ]
 
 depot_900_prozent = [

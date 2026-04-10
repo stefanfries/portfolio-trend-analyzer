@@ -54,6 +54,7 @@ uv run python -m app.main --force-save
 ```
 
 If Friday's signal already exists:
+
 ```text
 📋 Execution: ⚠️ Weekend run - signal already exists for last trading day (Friday). Not persisted.
 ```
