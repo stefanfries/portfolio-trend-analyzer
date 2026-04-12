@@ -17,8 +17,9 @@ class HistoryRecord(BaseModel):
 
 
 class HistoryData(BaseModel):
-    wkn: str
     name: str
+    wkn: str
+    isin: str | None = None
     id_notation: str
     trading_venue: str
     currency: Currency
